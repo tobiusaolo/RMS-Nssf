@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>{% block title %}{% endblock %} -RMS</title>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+        
+    </head>
+
+    <body>
+   <div class="row ">
+   <!--side bar -->
+    <div style="float:left; width:20%; height:100vh; background:gray;">
+    <div class="row" style="color:blue;">
+      <div class="col text-center">
+        <p class="h2">Admin Panel</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col text-center">
+        <h3 class="h3">Database(s)</h3>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col text-center">
+      <ul id="myUL">
+      <li><span class="caret">Employees</span>
+        <ul class="nested">
+        <li>Admin-staff</li>
+      <li>General-staff</li>
+        </ul>
+      <li><span class="caret">Expendintures</span>
+        <ul class="nested">
+        <li>salary</li>
+      <li>Procument</li>
+      </ul>
+      <li><span class="caret">Expendintures</span>
+        <ul class="nested">
+        <li>salary</li>
+      <li>Procument</li>
+      </ul>
+      <li><span class="caret">Expendintures</span>
+        <ul class="nested">
+        <li>salary</li>
+      <li>Procument</li>
+      </ul>
+      <li><span class="caret">Expendintures</span>
+        <ul class="nested">
+        <li>salary</li>
+      <li>Procument</li>
+      </ul>
+      <li><span class="caret">Expendintures</span>
+        <ul class="nested">
+        <li>salary</li>
+      <li>Procument</li>
+    </ul>
+  </li>
+</ul> 
+      </div>
+      
+    </div>
+    </div>
+    <!--end of side bar-->
+    <!--main window-->
+    <div style="float:right; width:80%; height:100vh;">
+    <div class=row>
+    <!--menu bar-->
+    <div class="col">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+             </li>
+             <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+              </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    </div>
+    <div class="row">
+      <!--main content-->
+       <div  class="col text-center">
+          {% block content %}
+          {% endblock %}
+        </div>
+    </div>
+      
+    </div>
+    <!--end of main window-->
+   </div>
+   <!--js for the side bar-->
+   <script>
+
+   var toggler = document.getElementsByClassName("caret");
+var i;
+
+for (i = 0; i < toggler.length; i++) {
+  toggler[i].addEventListener("click", function() {
+    this.parentElement.querySelector(".nested").classList.toggle("active");
+    this.classList.toggle("caret-down");
+  });
+} 
+   </script>
+    </body>
+</html>

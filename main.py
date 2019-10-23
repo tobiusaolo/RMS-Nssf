@@ -1,4 +1,4 @@
-from flask import Flask  
+from flask import Flask, render_template,url_for,request
 from flaskwebgui import FlaskUI #get the FlaskUI class
 app = Flask(__name__)
 
@@ -10,7 +10,7 @@ ui = FlaskUI(app)
 
 @app.route("/")
 def index():  
-    return "It works!"
+    return render_template('admin_dashboard.html')
 
 
 
