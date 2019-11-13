@@ -46,5 +46,9 @@
   ul.numerics{list-style:inside decimal}
   .ul.kas-icon-aero{}
   ul.kas-icon-aero li a:before{font-family: 'Glyphicons Halflings'; font-size:9px; content: "\e258"; padding-right:8px; }
+  .table-sortable tbody tr {
+    cursor: move;
+}
+
   
   

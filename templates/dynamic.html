@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Admin {% endblock title%}
+{% block content %}
+ <div class="content"> 
+       <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-body " text-color="black">
+                <h1>List table Fields</h1>
+              </div>
+            </div>
+          </div>
+        </div> 
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+                <h5 class="card-title">Structure</h5>
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <p>{{tab_name}}</p>
+                      <th>Table Structure</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for column in table_columns%}
+                    <tr><td>{{column[0]}}</td><td>{{column[1]}}</td><td>{{column[2]}}</td><td><form action="#" method="POST">
+                        <input name="db_name" type="hidden" value="{{table}}">
+                        <button type="submit" class="btn btn-success">Change</button>
+                      </form></td>
+                    </tr>
+                 {% endfor %}
+
+                  </tbody>
+                </table>
+              
+              </div>
+              <div class="card-title">Add Field</div>
+              <div class="card-body ">
+                <form action="{{url_for('create_field')}}" method='POST'>
+                  <p>Enter Field Name:</p>
+                  <input  name="table_name" type="hidden" class="form-control" value="{{tab_name}}" />
+                  <input  name="field_name"  class="form-control" />
+                  <label>Data Type:</label>
+                  <input  name="Type"  class="form-control" />
+                  <button type="submit" class="btn btn-success btn-lg">Go</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+{% endblock %}

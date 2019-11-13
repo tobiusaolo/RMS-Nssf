@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Admin {% endblock title%}
+{% block content %}
+ <div class="content"> 
+       <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-body " text-color="black">
+                <h1>List table Fields</h1>
+              </div>
+            </div>
+          </div>
+        </div> 
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+                <h5 class="card-title">Data in the Table:{{table_name}}</h5>
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      {% for column in colnames%}
+                      <th>{{column[0]}}</th>
+                      {% endfor%}
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tbody>
+                    {% for i in rows%}
+                    <tr>
+                      {%for df in i %}
+                    <td>{{df}}</td>  
+                      <td><form action="{{url_for('drop')}}" method="POST">
+                      <input type="hidden" name="field_name" value="{{df}}">
+                      <button class="btn-danger "><i class="fa fa fa-trash" aria-hidden="true"></i>Drop</button>
+                    </form></td>
+                    </tr> 
+                    {% endfor %}
+                    {% endfor%}
+                  </tbody>
+                </table>
+              
+              </div>
+              <div class="card-title"></div>
+              <div class="card-body ">
+                <form action="#" method='POST'>
+                  <button type="submit" class="btn btn-success btn-lg">Update</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+{% endblock %}

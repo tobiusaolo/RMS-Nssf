@@ -11,6 +11,15 @@
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type='text/css' href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200"  />
   <link rel="stylesheet" type='text/css' href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" >
+  <link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.1.3/darkly/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="{{url_for('static',filename='js/dynamic-form.js')}}"></script>
+  <style>
+
+        .container { margin: 150px auto; }
+        h1 { margin-bottom: 50px; }
+  </style>
   <!-- CSS Files -->
   <link  rel="stylesheet" type='text/css' href="{{url_for('static',filename='assets/css/bootstrap.min.css')}}" />
   <link rel="stylesheet" type='text/css'  href="{{url_for('static',filename='assets/css/paper-dashboard.min.css')}}"  />
@@ -40,15 +49,12 @@
         <ul class="nav">
           <li class="active ">
             <a href="./dashboard.html">
-
-              <i class="nc-icon nc-bank"></i>
-              
+              <i class="nc-icon nc-bank">Dashboard</i>
             </a>
           </li>
           <li>
             <a href="./icons.html">
               <i class="nc-icon nc-diamond"></i>
-              
             </a>
           </li>
           <li>
@@ -203,5 +209,19 @@
     });
   </script>
 </body>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36251023-1']);
+  _gaq.push(['_setDomainName', 'jqueryscript.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
 
 </html>

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Admin {% endblock title%}
+{% block content %}
+    <div class="content"> 
+       <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-body " text-color="black">
+              <form action="{{url_for('submitdata')}}" method="POST" >
+                <label ><strong><h2>Table Name:</h2></strong></label><input type="text" name="table_name" class="form-control"><br>
+                <textarea name="text" class="form-control"  style="height:400px;"></textarea>
+                <input type="submit" name="" value="Submit" class="btn-success btn-lg">
+             </form>
+              </div>
+            </div>
+          </div>
+        </div> 
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+                <h5 class="card-title">Feilds</h5>
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Table name</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  
+                    <tr>
+                     <td></td>
+                     <td>
+                    
+                      <form action="#" method="POST">
+                        <input name="db_name" type="hidden" value="">
+                        <button type="submit" class="btn btn-success">Use</button>
+                      </form>
+                     </td>
+                    </tr>
+                 
+
+                  </tbody>
+                </table>
+              
+              </div>
+              <div class="card-body ">
+               
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+{% endblock %}

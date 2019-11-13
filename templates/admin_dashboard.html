@@ -1,15 +1,14 @@
 
 {% extends "base.html" %}
 {% block title %}Admin {% endblock title%}
-{% import "bootstrap/wtf.html" as wtf %}
+
 {% block content %}
        <div class="content"> 
        <div class="row">
           <div class="col-md-12">
             <div class="card ">
-              <div class="card-body ">
-              <form method="POST" action="">
-              {{ wtf.quick_form(form)}}
+              <div class="card-body " text-color="black">
+              <h5 class="card-title">The RMS PayRoll system</h5>
               </form>
               </div>
             </div>
@@ -19,11 +18,39 @@
           <div class="col-md-12">
             <div class="card ">
               <div class="card-header ">
-                <h5 class="card-title">Database List</h5>
-                
+              <a href="{{url_for('table_form')}}" style="color: white;"><button class="btn-success btn-lg" style="float:right;"><i class="fa fa-plus-circle" aria-hidden="true"></i>Create</button></a>
+              <table class="table table-bordered">
+                <thead>
+                  <th>Table name</th>
+                  <th>Action</th>
+                </thead>
+                <tbody>
+                  {% for i  in table_names%}
+                  <tr>
+                    <td>{{i}}</td>
+                    <td><form action="{{url_for('structure')}}" method="POST">
+                      <input type="hidden" name="table_name" value="{{i}}">
+                      <button class="btn-primary ">Structures</button>
+                    </form></td>
+                    <td><form action="{{url_for('formdisplay')}}" method="POST">
+                      <input type="hidden" name="table_name" value="{{i}}">
+                      <button class="btn-secondary "><i class="fa fa-plus-square" aria-hidden="true"></i>Insert</button>
+                    </form></td>
+                    <td><form action="{{url_for('show')}}" method="POST">
+                      <input type="hidden" name="table_name" value="{{i}}">
+                      <button class="btn-default "><i class="fa fa-info-circle" aria-hidden="true"></i>Show</button>
+                    </form></td>
+                    <td><form action="{{url_for('delete')}}" method="POST">
+                      <input type="hidden" name="table_name" value="{{i}}">
+                      <button class="btn-danger "><i class="fa fa fa-trash" aria-hidden="true"></i>Drop</button>
+                    </form></td>
+                  </tr>
+                  {% endfor%}
+                </tbody>
+              </table>
               </div>
               <div class="card-body ">
-                Eric Peter
+               
               </div>
             </div>
           </div>

@@ -1,0 +1,127 @@
+
+{% extends "base.html" %}
+{% block title %}Admin {% endblock title%}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+<div class="panel panel-default">
+  <div class="panel-heading">Dynamic Form Fields - Add & Remove Multiple fields</div>
+  <div class="panel-heading">Education Experience</div>
+  <div class="panel-body" id="main_block">
+
+
+    <div class="col-sm-3 nopadding">
+      <div class="form-group">
+        <input type="text" class="form-control" id="Schoolname" name="Schoolname[]" value="" placeholder="School name">
+      </div>
+    </div>
+    <div class="col-sm-3 nopadding">
+      <div class="form-group">
+        <input type="text" class="form-control" id="Major" name="Major[]" value="" placeholder="Major">
+      </div>
+    </div>
+    <div class="col-sm-3 nopadding">
+      <div class="form-group">
+        <input type="text" class="form-control" id="Degree" name="Degree[]" value="" placeholder="Degree">
+      </div>
+    </div>
+
+    <div class="col-sm-3 nopadding">
+      <div class="form-group">
+        <div class="input-group">
+          <select class="form-control" id="educationDate" name="educationDate[]">
+
+            <option value="0">Date</option>
+            <option value="2015">2015</option>
+            <option value="2016">2016</option>
+            <option value="2017">2017</option>
+            <option value="2018">2018</option>
+          </select>
+          <div class="input-group-btn">
+            <button class="btn btn-success" type="button"  onclick="add_education_fields();"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clear"></div>
+    <div id="education_fields"></div>
+  </div>
+  <div class="panel-footer"><small>Press <span class="glyphicon glyphicon-plus gs"></span> to add another form field :)</small>,
+    <small>Press <span class="glyphicon glyphicon-minus gs"></span> to remove form field :)</small></div>
+</div>
+{% block script %}
+<script>
+    var room = 1;
+    // add dynamic fields
+    function add_education_fields() {
+       var marjor = $('#Major').val();
+       var Schoolname = $('#Schoolname').val();
+       var Degree = $('#Degree').val();
+       var educationDate = $('#educationDate option:selected').val();
+
+        room++;
+        var parentDiv = document.getElementById('education_fields'); // point to the parent Div
+        var childDiv = document.createElement("div"); // create child div on the fly
+        childDiv.setAttribute("class", "form-group removeclass"+room); // add a dynamic class to the child div
+        childDiv.innerHTML = '' +
+            '<div class="col-sm-3 nopadding">' +
+            '<div class="form-group">' +
+            ' <input readonly="readonly" type="text" class="form-control" id="Schoolname" name="Schoolname[]" value="'+Schoolname+'" placeholder="School name">' +
+            '</div>' +
+            '</div>' +
+            '<div class="col-sm-3 nopadding">' +
+            '<div class="form-group"> ' +
+            '<input readonly="readonly" type="text" class="form-control" id="Major" name="Major[]" value="'+marjor+'" placeholder="Major">' +
+            '</div>' +
+            '</div>' +
+            '<div class="col-sm-3 nopadding">' +
+            '<div class="form-group"> ' +
+            '<input readonly="readonly" type="text" class="form-control" id="Degree" name="Degree[]" value="'+Degree+'" placeholder="Degree">' +
+            '</div>' +
+            '</div>' +
+            '<div class="col-sm-3 nopadding">' +
+            '<div class="form-group">' +
+            '<div class="input-group"> ' +
+            '<select readonly="readonly" class="form-control" id="educationDate" name="educationDate[]">' +
+            '<option value="'+educationDate+'">'+educationDate+'</option>' +
+            '</select>' +
+            '<div class="input-group-btn">' +
+            ' <button class="btn btn-danger" type="button" onclick="remove_education_fields('+ room +');"> ' +
+            '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> ' +
+            '</button>' +
+            '</div></div></div>' +
+            '</div>' +
+            '<div class="clear"></div>';
+
+        parentDiv.appendChild(childDiv); //  append or inject dynamic fields to the parent div
+        var StoredDiv = $('.removeclass'+room).html();
+        manage_append(room,StoredDiv,'add'); //  store the dynamic fields to local storage
+        $('#Major').val(' ');  // then reset all fields
+        $('#Schoolname').val(' ');
+        $('#Degree').val(' ');
+      $('#educationDate').val(0);
+    }
+    // remove dynamic fields
+    function remove_education_fields(rid) {
+        manage_append(rid,0,'delete');
+        $('.removeclass'+rid).remove();
+    }
+     // add and remove dynamic fields from local storage
+    function manage_append(room,html,action){
+        if(action === 'add'){
+            localStorage.setItem(room,html);//
+        }else{
+            localStorage.removeItem(room);
+        }
+
+    }
+
+    // restore dynamic fields from local storage
+    $(function () {
+        for ( var i = 0, len = localStorage.length; i < len; ++i ) {
+         $("#education_fields").append( localStorage.getItem( localStorage.key( i ) ) );
+        }
+    });
+
+</script>
+{% endblock %}
+{% endblock %}
