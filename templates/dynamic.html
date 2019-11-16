@@ -37,8 +37,10 @@
                 </table>
               
               </div>
+
               <div class="card-title">Add Field</div>
               <div class="card-body ">
+               
                 <form action="{{url_for('create_field')}}" method='POST'>
                   <p>Enter Field Name:</p>
                   <input  name="table_name" type="hidden" class="form-control" value="{{tab_name}}" />
@@ -47,6 +49,7 @@
                   <input  name="Type"  class="form-control" />
                   <button type="submit" class="btn btn-success btn-lg">Go</button>
                 </form>
+
               </div>
             </div>
           </div>

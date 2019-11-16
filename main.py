@@ -8,6 +8,7 @@ import sqlite3
 from flask_sqlalchemy import SQLAlchemy
 from sqlite3 import Error
 from glob import glob
+import csv
 
 con = None
 app = Flask(__name__)
@@ -23,7 +24,7 @@ def getConnection():
     return con
 
 # do your logic as usual in Flask
-@app.route("/",methods=['GET','POST'])
+@app.route("/index",methods=['GET','POST'])
 def index():
     db=getConnection()
     c=db.cursor()
@@ -44,8 +45,11 @@ def submitdata():
         columns=text
         db=getConnection()
         c=db.cursor()
-        c.execute('CREATE TABLE {tn} ({fn})'.format(tn=table_name,fn=columns)) 
-        return redirect(url_for('index'))
+        try:
+            c.execute('CREATE TABLE {tn} ({fn})'.format(tn=table_name,fn=columns)) 
+            return redirect(url_for('index'))
+        except Exception as e:
+            raise e
 
 @app.route('/structure',methods=['POST','GET'])
 def structure():
@@ -59,17 +63,20 @@ def structure():
 
 @app.route('/create_field',methods=['POST','GET'])
 def create_field():
-    db=getConnection()
-    c=db.cursor()
     if request.method=='POST':
         tab_name = request.form['table_name']
         field_name= request.form['field_name']
         data_type=request.form['Type']
-        c.execute("alter table {tn} add {cn} {dt}".format(tn=tab_name,cn=field_name,dt=data_type))
-        con.commit()
-        result = c.execute("PRAGMA table_info('%s')" % tab_name).fetchall()
-    return render_template('dynamic.html',table_columns=result)
 
+        db=getConnection()
+        c=db.cursor()
+        try:
+            c.execute("alter table {tn} add {cn} {dt}".format(tn=tab_name,cn=field_name,dt=data_type))
+            con.commit()
+            result = c.execute("PRAGMA table_info('%s')" % tab_name).fetchall()
+            return render_template('dynamic.html',table_columns=result)
+        except Exception as e:
+            raise e
 @app.route('/formdisplay',methods=['POST','GET'])
 def formdisplay():
     if request.method=='POST':
@@ -91,7 +98,7 @@ def insert_record():
             table_name=data[0]
             table_values=tuple(data[1:])
         try:
-            cursor = c.execute('select * from {tn}'.format(tn=table_name))
+            cursor = c.execute('select () from {tn}'.format(tn=table_name))
             colnames=cursor.description
             fields=[]
             for field_name in colnames:
@@ -106,15 +113,36 @@ def insert_record():
 
 @app.route('/show',methods=['POST','GET'])
 def show():
+    global table_name
     if request.method=='POST':
         table_name=request.form['table_name']
         db=getConnection()
         c=db.cursor()
-        result = c.execute('select * from {tn}'.format(tn=table_name))
-        colnames=result.description
-        cur=c.execute("select * from {tn}".format(tn=table_name))
-        rows = cur.fetchall();
-        return render_template('original.html',rows=rows,table_name=table_name ,colnames=colnames)
+        try:
+            result = c.execute('select * from {tn}'.format(tn=table_name))
+            colnames=result.description
+            cur=c.execute("select {col1},{col2},{col3},{col4},{col5},{col6},{col7} from {tn}".format(tn=table_name,col1="FIRSTNAME",col2="SURNAME",col3="NSSF_NUMBER",col4="STAFF_NUMBER",col5="BANK_NAME",col6="BANK_NUMBER",col7="POSITION_OR_TITLE"))
+            rows = cur.fetchall()
+            return render_template('original.html',rows=rows,table_name=table_name ,colnames=colnames)
+        except Exception as e:
+            raise e
+
+@app.route('/showuser',methods=['POST','GET'])
+def showuser():
+    global table_name
+    # if request.method=='POST':
+    #     table_name=request.form['table_name']
+    db=getConnection()
+    c=db.cursor()
+    try:
+        # result = c.execute('select * from {tn}'.format(tn=tb))
+        # colnames=result.description
+        cur=c.execute("select {col1},{col2},{col3},{col4},{col5},{col6},{col7} from {tn}".format(tn="EmployeeRegistration",col1="FIRSTNAME",col2="SURNAME",col3="NSSF_NUMBER",col4="STAFF_NUMBER",col5="BANK_NAME",col6="BANK_NUMBER",col7="POSITION_OR_TITLE"))
+        rows = cur.fetchall()
+        return render_template('home.html',rows=rows,table_name=tb ,colnames=colnames)
+    except Exception as e:
+        raise e
+
 @app.route('/delete',methods=['POST','GET'])
 def delete():
     if request.method=='POST':
@@ -137,7 +165,57 @@ def drop():
         db.close()
     return render_template('original.html')
     # return redirect(url_for('show'))
+@app.route('/home')
+def home():
+    db=getConnection()
+    c=db.cursor()
+    cur=c.execute("select {col1},{col2},{col3},{col4},{col5},{col6},{col7} from {tn}".format(tn="EmployeeRegistration",col1="FIRSTNAME",col2="SURNAME",col3="NSSF_NUMBER",col4="STAFF_NUMBER",col5="BANK_NAME",col6="BANK_NUMBER",col7="POSITION_OR_TITLE"))
+    row = cur.fetchall()
+    rows=c.execute("select * from Dashboards where Viewer=='Hr'").fetchall()
 
 
+    return render_template('home.html',nav_items=rows,row=row)
+
+@app.route('/',methods=['POST','GET'])
+def loginform():
+    return render_template('login.html')
+
+@app.route('/export_table')
+def export_table():
+        print(table_name)
+        db=getConnection()
+        c=db.cursor()
+        c.execute('select * from {tn}'.format(tn=table_name))
+        file_name=table_name +".csv"
+        with open(file_name,'w') as out_csv_file:
+            csv_out = csv.writer(out_csv_file)
+            csv_out.writerow([d[0] for d in c.description])
+            for row in c:
+                csv_out.writerow(row)
+        return redirect(url_for('index'))
+        
+
+
+
+@app.route('/login' ,methods=['POST','GET'])
+def login():
+    if request.method=='POST':
+        username=request.form['username']
+        password=request.form['password']
+        role=request.form['role']
+        db=getConnection()
+        c=db.cursor()
+        query=c.execute('SELECT * FROM Login WHERE Username = ? AND Password = ? AND Role  = ?', (username, password , role))
+        rows = query.fetchall()
+        if rows:
+            if role=='Hr':
+                return redirect(url_for('home'))
+            elif role=='Admin':
+                return redirect(url_for('index'))
+            else:
+                return render_template('login.html')
+        else:
+            print('Login failed!')
+    return render_template('login.html')
 
 ui.run()

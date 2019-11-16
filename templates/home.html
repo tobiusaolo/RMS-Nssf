@@ -1,0 +1,65 @@
+{% extends "base2.html" %}
+{% block title %}HR Dashboard {% endblock title%}
+
+{% block content %}
+<section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-8">
+              <button class="btn-primary">COPY</button>
+              <button class="btn-secondary">EXCEL</button>
+              <button class="btn-default">CSV</button>
+              <button class="btn-primary">PDF</button>
+              <button class="btn-secondary">PRINT</button>
+          </div>
+          <div class="col-4">
+            <button class="btn-success"><i class="fa fa-backward" aria-hidden="true"></i>Back</button>
+            <a href="#" style="color: white;"><button class="btn-success"><i class="fa fa-plus-circle" aria-hidden="true"></i>Create</button></a>
+          </div>
+            <div class="col-12">
+            <table class="table table-stripped display" style="width:100%">
+            <thead>
+              <tr>
+                <th>FIRSTNAME</th>
+                <th>SURNAME</th>
+                <th>NSSF_NUMBER</th>
+                <th>STAFF_NUMBER</th>
+                <th>BANK_NAME</th>
+                <th>BANK_NUMBE</th>
+                <th>POSITION OR TITLE</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+        <tbody>
+            {% for i in row%}
+                    <tr>
+                      {%for df in i %}
+                    <td>{{df}}</td>  
+                    {% endfor %}
+                    <td>
+                      <button class="btn-success" ><i class="fa fa-user" aria-hidden="true"></i>Personal Details</button>
+                      <button class="btn-secondary  " ><i class="fa fa-briefcase" aria-hidden="true"></i><a href="#" style="color: white;">Job Details</a></button>
+                      <button class="btn-primary "><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit</button>
+                      <button class="btn-danger"><i class="fa fa fa-trash" aria-hidden="true"></i>Delete</button></td>
+                    </tr>
+                    {% endfor%}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>FIRSTNAME</th>
+                <th>SURNAME</th>
+                <th>NSSF_NUMBER</th>
+                <th>STAFF_NUMBER</th>
+                <th>BANK_NAME</th>
+                <th>BANK_NUMBE</th>
+                <th>POSITION OR TITLE</th>
+                <th>DEPARTMENT OR SECTION</th>
+                <th></th>
+                <th>Action</th>
+              </tr>
+        </tfoot>
+    </table>
+        </div>
+      </div>
+    </section>
+  {% endblock %}

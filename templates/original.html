@@ -7,8 +7,24 @@
             <div class="card ">
               <div class="card-body " text-color="black">
                 <h1>List table Fields</h1>
+
               </div>
             </div>
+          </div>
+          <div class="col-8">
+              <button class="btn-primary">COPY</button>
+            
+              <a href="{{url_for('export_table')}}" style="color: white;"><button class="btn-secondary"><i class="fa fa-backward" aria-hidden="true"></i>EXECEL</button></a>
+
+             
+
+              <button class="btn-default">CSV</button>
+              <button class="btn-primary">PDF</button>
+              <button class="btn-secondary">PRINT</button>
+            </div>
+            <div class="col-4">
+            <a href="{{url_for('index')}}" style="color: white;"><button class="btn-success"><i class="fa fa-backward" aria-hidden="true"></i>Back</button></a>
+           <!--  <a href="#" style="color: white;"><button class="btn-success"><i class="fa fa-plus-circle" aria-hidden="true"></i>Create</button></a> -->
           </div>
         </div> 
         <div class="row">
@@ -16,12 +32,17 @@
             <div class="card ">
               <div class="card-header ">
                 <h5 class="card-title">Data in the Table:{{table_name}}</h5>
-                <table class="table table-striped">
+                <table class="table" style="width:100%">
                   <thead>
                     <tr>
-                      {% for column in colnames%}
-                      <th>{{column[0]}}</th>
-                      {% endfor%}
+                     <th>FIRSTNAME</th>
+                    <th>SURNAME</th>
+                    <th>NSSF_NUMBER</th>
+                    <th>STAFF_NUMBER</th>
+                    <th>BANK_NAME</th>
+                    <th>BANK_NUMBE</th>
+                    <th>POSITION OR TITLE</th>
+                    
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -31,12 +52,13 @@
                     <tr>
                       {%for df in i %}
                     <td>{{df}}</td>  
-                      <td><form action="{{url_for('drop')}}" method="POST">
-                      <input type="hidden" name="field_name" value="{{df}}">
-                      <button class="btn-danger "><i class="fa fa fa-trash" aria-hidden="true"></i>Drop</button>
-                    </form></td>
-                    </tr> 
                     {% endfor %}
+                    <td>
+                      <button class="btn-success" ><i class="fa fa-user" aria-hidden="true"></i>Personal Details</button>
+                      <button class="btn-secondary  " ><i class="fa fa-briefcase" aria-hidden="true"></i><a href="#" style="color: white;">Job Details</a></button>
+                      <button class="btn-primary "><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit</button>
+                      <button class="btn-danger"><i class="fa fa fa-trash" aria-hidden="true"></i>Delete</button></td>
+                    </tr> 
                     {% endfor%}
                   </tbody>
                 </table>
