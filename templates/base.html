@@ -47,44 +47,54 @@
       </div>
       <div class="sidebar-wrapper">
         <ul class="nav">
-          <li class="active ">
-            <a href="{{url_for('index')}}">
-              <p>Dashboard</p>
-            </a>
+          <li class="active"><a href="#pagesettings" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+              General Settings</a>
+              <ul class="collapse list-unstyled" id="pagesettings">
+                  <li><a href="{{url_for('index')}}">Company Profile</a></li>
+                  <li><a href="{{url_for('working_days')}}">Set Working Days</a></li>
+              </ul>
           </li>
-          <li>
-            <a href="./icons.html">
-              <i class="nc-icon nc-diamond"></i>
-              <p>Departments</p>
-            </a>
+          <li><a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+              <span class="glyphicon glyphicon-edit"></span>Department</a>
+              <ul class="collapse list-unstyled" id="pageSubmenu">
+                  <li><a href="{{url_for('Department_list')}}">Department List</a></li>
+                  <li>
+                      <a href="{{url_for('department')}}">Add Departments</a>
+                  </li>
+                  <li><a>Remove Department</a></li>
+              </ul>
           </li>
-         
-          <li>
-            <a href="./icons.html">
-              <i class="nc-icon nc-diamond"></i>
-              <p>Employees</p>
-            </a>
-          </li>
-           <li>
-            <a href="./icons.html">
-              <i class="nc-icon nc-diamond"></i>
-              <p>Leave & Attendence</p>
-            </a>
-          </li>
-           <li>
-            <a href="./icons.html">
-              <i class="nc-icon nc-diamond"></i>
-              <p>Payroll</p>
-            </a>
+          <li><a href="#pageemp" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+              <span class="glyphicon glyphicon-edit"></span>Employee</a>
+              <ul class="collapse list-unstyled" id="pageemp">
+                  <li><a href="{{url_for('Employee_list')}}">Employee List</a></li>
+                  <li>
+                      <a href="{{url_for('Employee')}}">Add Employee</a>
+                  </li>
+                  <li><a>Fire Employee</a></li>
+              </ul>
           </li>
            <li>
-          
-          <li class="active-pro">
-            <a href="#">
-              <i class="nc-icon nc-spaceship"></i>
-              <p>Settings</p>
-            </a>
-          </li> 
+               <a href="#pagelv" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                   <span class="glyphicon glyphicon-edit"></span>Leave and Attendance</a>
+               <ul class="collapse list-unstyled" id="pagelv">
+                   <li><a href="{{url_for('Attendance')}}">Attendance</a></li>
+                   <li><a href="{{url_for('Leave')}}">Holidays / Leave</a></li>
+               </ul>
+          </li>
+           <li>
+               <a href="#pagepr" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Pay Roll</a>
+               <ul class="collapse list-unstyled" id="pagepr">
+                   <li><a href="{{url_for('salary')}}">Manage Salary Details</a></li>
+                   <li><a href="{{url_for('Salaries')}}">Employee Salary Records</a></li>
+               </ul>
+          </li>
+            <li>
+                <a href="#pageset" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">User Settings</a>
+               <ul class="collapse list-unstyled" id="pageset">
+                   <li><a href="{{url_for('settings')}}">List of Users</a></li>
+               </ul>
+          </li>
         </ul>
       </div>
     </div>
