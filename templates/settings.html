@@ -1,0 +1,93 @@
+
+{% extends "base.html" %}
+{% block title %}Admin {% endblock title%}
+{% block content %}
+    <div class="content" xmlns="http://www.w3.org/1999/html">
+       <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-body " text-color="black">
+                <h3 class="card-title">List of Users</h3>
+                  <table id="example" class="table table-striped table-bordered" style="width:100%">
+                      <thead>
+                      <th>Name</th>
+                      <th>Password</th>
+                      <th>Role</th>
+                      </thead>
+                      <tbody>
+                      <tr>
+                          <td>Eric Peter</td>
+                          <td>wepson@1996</td>
+                          <td>Artificial Intelligence Engineer</td>
+                          <td><button class="btn btn-danger">Remove</button></td>
+                      </tr> <tr>
+                          <td>Toby</td>
+                          <td>masaka@1995</td>
+                          <td>Data Engineer</td>
+                          <td><button class="btn btn-danger">Remove</button></td>
+                      </tr>
+
+                      </tbody>
+                  </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+              <div class="card-group">
+                  <div class="card">
+                      <div class="card-body">
+                          <h5 class="card-title">Change Username/Password </h5>
+                          <form  method="POST">
+                              <div class="form-group">
+                                  <label><h6><strong>Employee Name</strong></h6></label>
+                                  <input type="text" name="name" class="form-control" required="True">
+                              </div>
+                              <div class="form-group">
+                                  <label><h6><strong>Current Password</strong></h6></label>
+                                  <input type="password" name="cpassword" class="form-control" required="True">
+                              </div>
+                               <div class="form-group">
+                                  <label><h6><strong>New Password</strong></h6></label>
+                                  <input type="password" name="npassword" class="form-control" required="True">
+                              </div>
+                              <div class="form-group">
+                                  <button class="btn btn-primary">Save</button>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+                  <div class="card">
+                      <div class="card-body">
+                          <h5 class="card-title">Assign role</h5>
+                          <form  method="POST">
+                              <div class="form-group">
+                                  <label><h6><strong>Employee Name</strong></h6></label>
+                                  <input type="text" class="form-control" name="emp_name" required="True">
+                              </div>
+                              <div class="form-group">
+                                  <label><h6><strong>Role</strong></h6></label>
+                                  <input type="text" name="role" class="form-control" required="True">
+                              </div>
+                              <div class="form-group">
+                                  <button class="btn btn-success">Save</button>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+{#                  <div class="card">#}
+{#                      <div class="card-body">#}
+{#                          <h5 class="card-title">Total Salary Details</h5>#}
+{#                      </div>#}
+{#                  </div>#}
+              </div>
+          </div> <script>
+                $(document).ready(function() {
+                    $('#example').DataTable();
+                } );
+            </script>
+
+        </div>
+      </div>
+{% endblock %}

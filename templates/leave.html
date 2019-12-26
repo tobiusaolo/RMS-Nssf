@@ -1,0 +1,97 @@
+
+{% extends "base.html" %}
+{% block title %}Admin {% endblock title%}
+{% block content %}
+    <div class="content" xmlns="http://www.w3.org/1999/html">
+       <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-body " text-color="black">
+                <h3 class="card-title">Leave and Attendance</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+              	<form  method="POST">
+                    <div class="row">
+                        <div class="col">
+                           Public Holiday<input type="text" class="form-control" name="public_holiday">
+                        </div>
+                        <div class="col">
+                            Date<input type="date" class="form-control" name="date1">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                           Personal Event<input type="text" class="form-control" name="personal_event">
+                        </div>
+                        <div class="col">
+                            Date<input type="date" class="form-control" name="date2">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                           Company Events<input type="text" class="form-control" name="company_events">
+                        </div>
+                        <div class="col">
+                            Date<input type="date" class="form-control" name="date3">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                           <button class="btn btn-success">Submit</button>
+                        </div>
+                    </div>
+                </form>
+              </div>
+              <div class="card-body ">
+                  <h3 class="card-title">Sick Leave</h3>
+                  <form method="POST">
+                      <div class="row">
+                        <div class="col">
+                           Employee name<input type="text" class="form-control" name="public_holiday">
+                        </div>
+                        <div class="col">
+                            Start Date<input type="date" class="form-control" name="start_date">
+                        </div>
+                          <div class="col">
+                            End Date<input type="date" class="form-control" name="end_date">
+                        </div>
+                    </div>
+                       <div class="row">
+                           <div class="col">
+                               <button class="btn btn-success">Submit</button>
+                           </div>
+                    </div>
+                  </form>
+              </div>
+                   <div class="card-body ">
+                  <h3 class="card-title">Vacation</h3>
+                  <form method="POST">
+                      <div class="row">
+                        <div class="col">
+                           Employee name<input type="text" class="form-control" name="public_holiday">
+                        </div>
+                        <div class="col">
+                            Start Date<input type="date" class="form-control" name="start_date">
+                        </div>
+                          <div class="col">
+                            End Date<input type="date" class="form-control" name="end_date">
+                        </div>
+                    </div>
+                       <div class="row">
+                           <div class="col">
+                               <button class="btn btn-success">Submit</button>
+                           </div>
+                    </div>
+                  </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+{% endblock %}

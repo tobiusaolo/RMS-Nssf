@@ -1,0 +1,136 @@
+
+{% extends "base.html" %}
+{% block title %}Admin {% endblock title%}
+{% block content %}
+    <div class="content" xmlns="http://www.w3.org/1999/html">
+       <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-body " text-color="black">
+                <h3 class="card-title">Manage Salary Details</h3>
+                  <h5 class="card-title">Deductions</h5>
+                  <table id="example" class="table table-striped table-bordered" style="width:100%">
+                      <thead>
+                      <th>Name</th>
+                      <th>PAYE</th>
+                      <th>NSSF Contribution</th>
+                      <th>Saving Scheme (SACCO)</th>
+                      <th>Other Deductions</th>
+                      </thead>
+                      <tbody>
+                      <tr>
+                          <td>Eric Peter</td>
+                          <td>67000</td>
+                          <td>65000</td>
+                          <td>466535</td>
+                          <td>None</td>
+                      </tr> <tr>
+                          <td>Eric Peter</td>
+                          <td>67000</td>
+                          <td>65000</td>
+                          <td>466535</td>
+                          <td>None</td>
+                      </tr>
+
+                      </tbody>
+                  </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+              <div class="card-group">
+                  <div class="card">
+                      <div class="card-body">
+                          <h5 class="card-title">Salary Structure </h5>
+                          <form  method="POST">
+                              <div class="form-group">
+                                  <label><h6><strong>Employee Name</strong></h6></label>
+                                  <input type="text" name="name" class="form-control" required="True">
+                              </div>
+                              <div class="form-group">
+                                  <label><h6><strong>Employment type</strong></h6></label>
+                                  <select>
+                                      <option value="Permanent">Permanent</option>
+                                      <option value="Probation">Probation</option>
+                                  </select>
+                              </div>
+                              <div class="form-group">
+                                  <label><h6><strong>Basic Salary (Calculated)</strong></h6></label>
+                                  <input type="text" name="bsalary" class="form-control" required="True">
+                              </div>
+                              <div class="form-group">
+                                  <button class="btn btn-primary">Save</button>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+                  <div class="card">
+                      <div class="card-body">
+                          <h5 class="card-title">Monthly Allowances</h5>
+                          <form  method="POST">
+                              <div class="form-group">
+                                  <label><h6><strong>Rent </strong></h6></label>
+                                  <input type="text" class="form-control" name="rent" required="True">
+                              </div>
+                              <div class="form-group">
+                                  <label><h6><strong>Medical</strong></h6></label>
+                                  <input type="text" name="medical" class="form-control" required="True">
+                              </div>
+                              <div class="form-group">
+                                  <label><h6><strong>Fuel</strong></h6></label>
+                                  <input type="date" name="fuel" class="form-control" required="True">
+                              </div>
+                              <div class="form-group">
+                                  <label><h6><strong>Special allowances</strong></h6></label>
+                                  <input type="text" name="spec_allowances" class="form-control" required="True">
+                              </div>
+                              <div class="form-group">
+                                  <label><h6><strong>Other allowances</strong></h6></label>
+                                  <input type="text" name="Other_allowances" class="form-control" required="True">
+                              </div>
+                              <div class="form-group">
+                                  <button class="btn btn-success">Save</button>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+                  <div class="card">
+                      <div class="card-body">
+                          <h5 class="card-title">Total Salary Details</h5>
+                          <table id="example" class="table table-striped table-bordered" style="width:100%">
+                              <thead>
+                              <th>Name</th>
+                              <th>Gross Salary</th>
+                              <th>Total Deductions</th>
+                              <th>Net Salary</th>
+                      </thead>Salaries
+                      <tbody>
+                      <tr>
+                          <td>Eric Peter</td>
+                          <td>67000</td>
+                          <td>65000</td>
+                          <td>466535</td>
+                      </tr>
+                      <tr>
+                          <td>Eric Peter</td>
+                          <td>67000</td>
+                          <td>65000</td>
+                          <td>466535</td>
+                      </tr>
+
+                      </tbody>
+                  </table>
+                      </div>
+                  </div>
+              </div>
+          </div> <script>
+                $(document).ready(function() {
+                    $('#example').DataTable();
+                } );
+            </script>
+
+        </div>
+      </div>
+{% endblock %}

@@ -1,0 +1,60 @@
+
+{% extends "base.html" %}
+{% block title %}Admin {% endblock title%}
+{% block content %}
+    <div class="content" xmlns="http://www.w3.org/1999/html">
+       <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-body " text-color="black">
+                <h3 class="card-title">Department list</h3>
+                  <input type="button" value="CSV" class="btn btn-primary">
+                  <input type="button" value="Copy" class="btn btn-success">
+                  <input type="button" value="Excel" class="btn btn-default">
+                  <input type="button" value="PDF" class="btn btn-secondary">
+                  <input type="button" value="Print" class="btn btn-success">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+              	<table id="example" class="table table-striped table-bordered" style="width:100%">
+                    <thead>
+                    <th>Name</th>
+                    <th>Number of Members</th>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Finance</td>
+                        <td>30</td>
+                        <td><button class="btn btn-danger">Remove</button></td>
+                    </tr>
+                    <tr>
+                        <td>IT</td>
+                        <td>40</td>
+                        <td><button class="btn btn-danger">Remove</button></td>
+                    </tr>
+                      <tr>
+                        <td>Data Analysis</td>
+                        <td>78</td>
+                          <td><button class="btn btn-danger">Remove</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+              </div>
+              <div class="card-body ">
+
+              </div>
+            </div>
+          </div>
+            <script>
+                $(document).ready(function() {
+                    $('#example').DataTable();
+                } );
+            </script>
+        </div>
+      </div>
+{% endblock %}

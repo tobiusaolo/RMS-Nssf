@@ -1,0 +1,57 @@
+
+{% extends "base.html" %}
+{% block title %}Admin {% endblock title%}
+{% block content %}
+    <div class="content" xmlns="http://www.w3.org/1999/html">
+       <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-body " text-color="black">
+                <h3 class="card-title">Set Working Days</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+              	<form  method="POST">
+                   <!-- Default unchecked disabled -->
+                    <div class="custom-control custom-checkbox form-group">
+                        <input type="checkbox" class="custom-control-input form-control"id="defaultCheckedDisabled1" >
+                        <label class="custom-control-label"for="defaultCheckedDisabled1"><strong>Sunday</strong></label>
+                    </div>
+                    <div class="custom-control custom-checkbox form-group">
+                        <input type="checkbox" class="custom-control-input form-control" id="defaultCheckedDisabled2" value="Monday">
+                        <label class="custom-control-label" for="defaultCheckedDisabled2"><strong>Monday</strong></label>
+                    </div>
+                    <div class="custom-control custom-checkbox form-group">
+                        <input type="checkbox" class="custom-control-input form-control" id="defaultCheckedDisabled3" value="Tuesday" >
+                        <label class="custom-control-label" for="defaultCheckedDisabled3"><strong>Tuesday</strong></label>
+                    </div>
+                    <div class="custom-control custom-checkbox form-group">
+                        <input type="checkbox" class="custom-control-input form-control" id="defaultCheckedDisabled4" value="Wednesday">
+                        <label class="custom-control-label" for="defaultCheckedDisabled4"><strong>Wednesday</strong></label>
+                    </div>
+                    <div class="custom-control custom-checkbox form-group">
+                        <input type="checkbox" class="custom-control-input form-control" id="defaultCheckedDisabled5" value="Thursday">
+                        <label class="custom-control-label" for="defaultCheckedDisabled5"><strong>Thursday</strong></label>
+                    </div>
+                    <div class="custom-control custom-checkbox form-group">
+                        <input type="checkbox" class="custom-control-input" id="defaultCheckedDisabled6" value="Friday">
+                        <label class="custom-control-label" for="defaultCheckedDisabled6"><strong>Friday</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <input class="btn btn-primary" type="button" value="Submit">
+                    </div>
+                </form>
+              </div>
+              <div class="card-body ">
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+{% endblock %}
