@@ -13,19 +13,17 @@
                       <th>Name</th>
                       <th>Password</th>
                       <th>Role</th>
+                      <th>Action</th>
                       </thead>
                       <tbody>
+                      {%for df in rows%}
                       <tr>
-                          <td>Eric Peter</td>
-                          <td>wepson@1996</td>
-                          <td>Artificial Intelligence Engineer</td>
-                          <td><button class="btn btn-danger">Remove</button></td>
-                      </tr> <tr>
-                          <td>Toby</td>
-                          <td>masaka@1995</td>
-                          <td>Data Engineer</td>
+                          {% for i in df%}
+                          <td>{{i}}</td>
+                          {% endfor %}
                           <td><button class="btn btn-danger">Remove</button></td>
                       </tr>
+                      {%endfor%}
 
                       </tbody>
                   </table>
@@ -42,7 +40,13 @@
                           <form  method="POST">
                               <div class="form-group">
                                   <label><h6><strong>Employee Name</strong></h6></label>
-                                  <input type="text" name="name" class="form-control" required="True">
+                                  <select name="name">
+                                      {% for i in sql_row %}
+                                          {% for v in i %}
+                                               <option>{{v}}</option>
+                                              {% endfor %}
+                                      {% endfor %}
+                                  </select>
                               </div>
                               <div class="form-group">
                                   <label><h6><strong>Current Password</strong></h6></label>
@@ -61,14 +65,34 @@
                   <div class="card">
                       <div class="card-body">
                           <h5 class="card-title">Assign role</h5>
-                          <form  method="POST">
+                          <form  method="POST" action="{{url_for('Role')}}">
                               <div class="form-group">
                                   <label><h6><strong>Employee Name</strong></h6></label>
-                                  <input type="text" class="form-control" name="emp_name" required="True">
+                                  <select name="name">
+                                      {% for i in sql_row %}
+                                          {% for v in i %}
+                                               <option>{{v}}</option>
+                                              {% endfor %}
+                                      {% endfor %}
+                                  </select>
+                              </div>
+                              <div class="form-group">
+                                  <label><h6><strong>Department</strong></h6></label>
+                                  <select name="department">
+                                      {% for x in depart_row%}
+                                          {% for t in x %}
+                                               <option>{{t}}</option>
+                                              {% endfor %}
+                                      {% endfor %}
+                                  </select>
                               </div>
                               <div class="form-group">
                                   <label><h6><strong>Role</strong></h6></label>
                                   <input type="text" name="role" class="form-control" required="True">
+                              </div>
+                              <div class="form-group">
+                                  <label><h6><strong>Password</strong></h6></label>
+                                  <input type="password" name="password" class="form-control" required="True">
                               </div>
                               <div class="form-group">
                                   <button class="btn btn-success">Save</button>
