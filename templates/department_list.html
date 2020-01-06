@@ -33,7 +33,12 @@
                     {% for i in df %}
                         <td>{{i}}</td>
                         {% endfor %}
-                        <td><button class="btn btn-danger">Remove</button></td>
+                        <td>
+                            <form method="POST" action="{{url_for('Delete_Department')}}">
+                                <input type="hidden" value="{{df[0]}}" name="depart">
+                                <button class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                     </tbody>

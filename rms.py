@@ -203,6 +203,21 @@ def Department_list():
     rows = query.fetchall()
     db.close()
     return render_template('department_list.html',rows=rows)
+###Delete department
+@app.route('/Delete_Department',methods=['POST','GET'])
+def Delete_Department():
+    if request.method=='POST':
+        depart=request.form['depart']
+        db=getConnection()
+        c=db.cursor()
+        try:
+            c.execute('''DELETE FROM Departments WHERE Department=('{nm}') '''.format(nm=depart))
+            db.commit()
+            db.close()
+            return redirect(url_for('Department_list'))
+        except Exception as e:
+            raise e
+    return  render_template('department_list.html')
 ##attendance
 @app.route('/Attendance',methods=['POST','GET'])
 def Attendance():
@@ -237,6 +252,21 @@ def settings():
     query = c.execute('SELECT * FROM Roles')
     rows = query.fetchall()
     return render_template('settings.html', sql_rows=sql_rows,depart_row=depart_row, rows=rows)
+##Delete user
+@app.route('/Delete_User',methods=['POST','GET'])
+def Delete_User():
+    if request.method=='POST':
+        name = request.form['name']
+        db=getConnection()
+        c=db.cursor()
+        try:
+            c.execute('''DELETE FROM Roles WHERE Employee_name=('{nm}') '''.format(nm=name))
+            db.commit()
+            db.close()
+            return  redirect(url_for('settings'))
+        except Exception as e:
+            raise  e
+    return  render_template('settings.html')
 ##Assigning employees roles
 @app.route('/Role',methods=['POST','GET'])
 def Role():
@@ -258,12 +288,20 @@ def Role():
             raise e
     return render_template('settings.html')
 ###change password
-@app.route('/Change_Password')
+@app.route('/Change_Password',methods=['POST','GET'])
 def Change_Password():
     if request.method=='POST':
         name = request.form['name']
-        c_password=request.form['cpassword']
         npassword = request.form['npassword']
+        db=getConnection()
+        c=db.cursor()
+        try:
+            c.execute('''UPDATE Roles SET Password =('{ps}') WHERE Employee_name=('{nm}')'''.format(ps=npassword, nm=name))
+            db.commit()
+            db.close()
+            return redirect(url_for('settings'))
+        except Exception as e:
+            raise e
     return render_template('settings.html')
 if __name__ == "__main__":
    app.run(debug=True, host='0.0.0.0', port=5000)
