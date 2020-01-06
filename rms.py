@@ -73,15 +73,6 @@ def department():
         except Exception as e:
             raise e
     return render_template('department.html')
-# ##Fetch employee data
-# @app.route('/Fetch')
-# def Fetch():
-#     db = getConnection()
-#     c = db.cursor()
-#     query = c.execute('SELECT Emp_ID FROM Employee_Credentials')
-#     emp_id = query.fetchall()
-#     return render_template('employe_maintence.html',emp_id=emp_id)
-###adding employee and removing employee
 @app.route('/Employee',methods=['POST','GET'])
 def Employee():
     data = []
@@ -112,7 +103,7 @@ def Employee():
 def Leave():
     db = getConnection()
     c = db.cursor()
-    query= c.execute('SELECT Firstname FROM Personal_Infor')
+    query= c.execute('SELECT FIRSTNAME FROM Employee_Data')
     sql_rows =query.fetchall()
     return render_template('leave.html',sql_rows=sql_rows)
 ###Public holidays
@@ -150,7 +141,7 @@ def Sick_Leave():
             db.close()
             return  redirect(url_for('Leave'))
         except Exception as e:
-            raise
+            raise e
     return render_template('leave.html')
 ###Asign a vacation
 @app.route('/Vacation',methods=['POST','GET'])
@@ -175,9 +166,34 @@ def Vacation():
 def working_days():
     return  render_template('working_days.html')
 ##employee list
-@app.route('/Employee_list')
+@app.route('/Employee_list',methods=['POST','GET'])
 def Employee_list():
-    return render_template('employee_list.html')
+    df = []
+    db = getConnection()
+    c = db.cursor()
+    query = c.execute('''SELECT MOBILE,JOIN_DATE FROM Employee_Data''')
+    rows = query.fetchall()
+    t = db.cursor()
+    sql = t.execute('''SELECT Employee_name,Role,Department FROM Roles''')
+    sql_row = sql.fetchall()
+    for i, x in zip(sql_row,rows):
+        data = i + x
+        df.append(data)
+    return render_template('employee_list.html',df=df)
+##Fire employee
+@app.route('/Fire_Employee',methods=['POST','GET'])
+def Fire_Employee():
+    db=getConnection()
+    c=db.cursor()
+    query = c.execute('''SELECT FIRSTNAME FROM Employee_Data''')
+    name=query.fetchall()
+    if request.method=='POST':
+        name = request.form['name']
+        d= db.cursor()
+        d.execute('''DELETE FROM Employee_Data WHERE FIRSTNAME=('{nm}') '''.format(nm=name))
+        db.commit()
+        db.close()
+    return render_template('Fire_Employee.html',name=name)
 ##department list
 @app.route('/Department_list')
 def Department_list():
@@ -190,25 +206,18 @@ def Department_list():
 ##attendance
 @app.route('/Attendance',methods=['POST','GET'])
 def Attendance():
-    db = getConnection()
-    c = db.cursor()
-    data = []
-    query0 = c.execute('SELECT Emp_ID  FROM Employee_Credentials')
-    rows0 = query0.fetchall()
-    data.append(rows0)
-    query1 = c.execute('SELECT Joining_Date FROM Employee_Credentials')
-    rows1 = query1.fetchall()
-    data.append(rows1)
-    for i in rows0:
-        query2 = c.execute('SELECT Firstname FROM Personal_Infor WHERE Firstname=={rows0}'.format(rows0=i))
-        rows2 = query2.fetchall()
-        data.append(rows2)
-    for x in rows2:
-        query3 = c.execute('SELECT Department FROM Roles WHERE Employee_name={rows1}'.format(rows1=x))
-        rows3 = query3.fetchall()
-        data.append(rows3)
-    print(data)
-    return render_template('attendance.html',)
+    df = []
+    db=getConnection()
+    c=db.cursor()
+    query = c.execute('''SELECT JOIN_DATE,Emp_ID,FIRSTNAME FROM Employee_Data''')
+    rows = query.fetchall()
+    t=db.cursor()
+    sql = t.execute('''SELECT Role FROM Roles''')
+    sql_row = sql.fetchall()
+    for i,x in zip(rows,sql_row):
+        data = i+x
+        df.append(data)
+    return render_template('attendance.html',rows=df)
 #####salary
 @app.route('/salary')
 def salary():
@@ -217,23 +226,11 @@ def salary():
 @app.route('/Salaries')
 def Salaries():
     return render_template('Salaries.html')
-# ##user settings
-# @app.route('/update_settings')
-# def update_settings():
-#    if request.method=='POST':
-#        try:
-#            db = getConnection()
-#            c = db.cursor()
-#            query = c.execute('SELECT * FROM Roles')
-#            rows = query.fetchall()
-#            return redirect('settings')
-#     return render_template('settings.html', rows=rows)
-
 @app.route('/settings')
 def settings():
     db = getConnection()
     c = db.cursor()
-    query = c.execute('SELECT Firstname FROM Personal_Infor')
+    query = c.execute('SELECT FIRSTNAME FROM Employee_Data')
     sql_rows = query.fetchall()
     depart = c.execute('SELECT Department FROM Departments')
     depart_row = depart.fetchall()

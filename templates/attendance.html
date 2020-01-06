@@ -25,18 +25,19 @@
                     <th>Mark Attendance</th>
                     </thead>
                     <tbody>
+                    {% for i in rows %}
                     <tr>
-                        <td>2019/09/12</td>
-                        <td>35353</td>
-                        <td>Eric Peter</td>
-                        <td>Software Engineering</td>
+                        {% for x in i %}
+                            <td>{{x}}</td>
+                        {% endfor %}
                         <td>
                             <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="customCheck1" checked>
+                                <input type="checkbox" class="custom-control-input" id="customCheck1">
                                 <label class="custom-control-label" for="customCheck1">Leave</label>
                             </div>
                         </td>
                     </tr>
+                     {% endfor %}
                     </tbody>
                 </table>
               </div>

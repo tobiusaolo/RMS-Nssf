@@ -1,0 +1,42 @@
+
+{% extends "base.html" %}
+{% block title %}Admin {% endblock title%}
+{% block content %}
+    <div class="content" xmlns="http://www.w3.org/1999/html">
+       <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-body " text-color="black">
+                <h3 class="card-title">Employee Maintence</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+              <form  method="POST" action="{{url_for('Fire_Employee')}}">
+              <div class="card-group">
+                  <div class="card">
+                      <div class="card-body">
+                          <h5 class="card-title">Fire Employee </h5>
+                              <div class="form-group">
+                                  <label><h6><strong>First Name </strong></h6></label>
+                                  <select name="name">
+                                      {% for i in name %}
+                                          {% for v in i %}
+                                               <option>{{v}}</option>
+                                              {% endfor %}
+                                      {% endfor %}
+                                  </select>
+                              </div>
+                           <div class="form-group">
+                                  <button class="btn btn-danger">Fire</button>
+                           </div>
+                      </div>
+                  </div>
+              </div>
+              </form>
+          </div>
+        </div>
+      </div>
+{% endblock %}
