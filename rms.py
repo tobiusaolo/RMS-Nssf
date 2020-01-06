@@ -87,11 +87,11 @@ def Employee():
             NSSF_NUMBER VARCHAR(100),DESIGNATION VARCHAR(100),STATUS VARCHAR(100) ,JOIN_DATE DATE,FIRSTNAME VARCHAR(100),
             LASTNAME VARCHAR(100),DOB DATE ,MARITAL_STATUS VARCHAR(100),GENDER VARCHAR(100),NATIONALITY VARCHAR(100),
             CURRENT_ADDRESS VARCHAR(100),MOBILE VARCHAR(10),PHONE VARCHAR(10),EMAIL VARCHAR(100),ACCOUNT_NAME VARCHAR(100),
-            ACCOUNT_NUMBER VARCHAR(100) ,BANK_NAME VARCHAR(100),BANK_BRANCH VARCHAR(100))''')
+            ACCOUNT_NUMBER VARCHAR(100) ,BANK_NAME VARCHAR(100),BANK_BRANCH VARCHAR(100),ATTENDANCE_STATUS VARCHAR(100))''')
 
             c.execute('''INSERT INTO Employee_Data(Emp_ID,TIN_NUMBER,NSSF_NUMBER,DESIGNATION,STATUS,JOIN_DATE,FIRSTNAME,
             LASTNAME,DOB,MARITAL_STATUS,GENDER,NATIONALITY,CURRENT_ADDRESS,MOBILE,PHONE,EMAIL,ACCOUNT_NAME,ACCOUNT_NUMBER,BANK_NAME
-            ,BANK_BRANCH)  VALUES {table_values}'''.format(table_values=table_data))
+            ,BANK_BRANCH,ATTENDANCE_STATUS)  VALUES {table_values}'''.format(table_values=table_data))
             db.commit()
             db.close()
             return redirect(url_for('Employee'))
@@ -168,32 +168,49 @@ def working_days():
 ##employee list
 @app.route('/Employee_list',methods=['POST','GET'])
 def Employee_list():
-    df = []
+    # df = []
     db = getConnection()
     c = db.cursor()
-    query = c.execute('''SELECT MOBILE,JOIN_DATE FROM Employee_Data''')
+    query = c.execute('''SELECT TIN_NUMBER,NSSF_NUMBER,STATUS,JOIN_DATE,FIRSTNAME,
+            LASTNAME,EMAIL,ATTENDANCE_STATUS FROM Employee_Data''')
     rows = query.fetchall()
-    t = db.cursor()
-    sql = t.execute('''SELECT Employee_name,Role,Department FROM Roles''')
-    sql_row = sql.fetchall()
-    for i, x in zip(sql_row,rows):
-        data = i + x
-        df.append(data)
-    return render_template('employee_list.html',df=df)
+    # t = db.cursor()
+    # sql = t.execute('''SELECT Employee_name,Role,Department FROM Roles''')
+    # sql_row = sql.fetchall()
+    # for i, x in zip(sql_row,rows):
+    #     data = i + x
+    #     df.append(data)
+    return render_template('employee_list.html',df=rows)
+##activate status
+@app.route('/activate',methods=['POST','GET'])
+def activate():
+    if request.method=='POST':
+        name = request.form['name']
+        db = getConnection()
+        d= db.cursor()
+        try:
+            d.execute('''UPDATE Employee_Data SET ATTENDANCE_STATUS=('Active') WHERE FIRSTNAME=('{nm}')'''.format(nm=name))
+            db.commit()
+            db.close()
+            return  redirect(url_for('Employee_list'))
+        except Exception as e:
+            raise e
+    return  render_template('employee_list.html')
 ##Fire employee
 @app.route('/Fire_Employee',methods=['POST','GET'])
 def Fire_Employee():
-    db=getConnection()
-    c=db.cursor()
-    query = c.execute('''SELECT FIRSTNAME FROM Employee_Data''')
-    name=query.fetchall()
     if request.method=='POST':
         name = request.form['name']
+        db = getConnection()
         d= db.cursor()
-        d.execute('''DELETE FROM Employee_Data WHERE FIRSTNAME=('{nm}') '''.format(nm=name))
-        db.commit()
-        db.close()
-    return render_template('Fire_Employee.html',name=name)
+        try:
+            d.execute('''UPDATE Employee_Data SET ATTENDANCE_STATUS=('Inactive') WHERE FIRSTNAME=('{nm}')'''.format(nm=name))
+            db.commit()
+            db.close()
+            return  redirect(url_for('Employee_list'))
+        except Exception as e:
+            raise e
+    return render_template('employee_list.html.html')
 ##department list
 @app.route('/Department_list')
 def Department_list():
