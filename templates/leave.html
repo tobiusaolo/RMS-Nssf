@@ -16,7 +16,7 @@
           <div class="col-md-12">
             <div class="card ">
               <div class="card-header ">
-              	<form  method="POST">
+              	<form  method="POST" action="{{url_for('Holidays')}}">
                     <div class="row">
                         <div class="col">
                            Public Holiday<input type="text" class="form-control" name="public_holiday">
@@ -50,10 +50,17 @@
               </div>
               <div class="card-body ">
                   <h3 class="card-title">Sick Leave</h3>
-                  <form method="POST">
+                  <form method="POST" action="{{url_for('Sick_Leave')}}">
                       <div class="row">
                         <div class="col">
-                           Employee name<input type="text" class="form-control" name="public_holiday">
+                           Employee name
+                             <select name="name">
+                                      {% for i in sql_rows %}
+                                          {% for v in i %}
+                                               <option>{{v}}</option>
+                                              {% endfor %}
+                                      {% endfor %}
+                                  </select>
                         </div>
                         <div class="col">
                             Start Date<input type="date" class="form-control" name="start_date">
@@ -71,10 +78,17 @@
               </div>
                    <div class="card-body ">
                   <h3 class="card-title">Vacation</h3>
-                  <form method="POST">
+                  <form method="POST" action="{{url_for('Vacation')}}">
                       <div class="row">
                         <div class="col">
-                           Employee name<input type="text" class="form-control" name="public_holiday">
+                           Employee name
+                             <select name="name">
+                                      {% for i in sql_rows %}
+                                          {% for v in i %}
+                                               <option>{{v}}</option>
+                                              {% endfor %}
+                                      {% endfor %}
+                                  </select>
                         </div>
                         <div class="col">
                             Start Date<input type="date" class="form-control" name="start_date">

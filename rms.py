@@ -49,6 +49,7 @@ def Profile():
             Company_nssf_number VARCHAR(100),Address VARCHAR(100)  ,Email  VARCHAR(100) ,Telephone  VARCHAR(100) )'''.format(tn=Company_name))
             c.execute('Insert INTO {tn} (Company_name,Company_tin,Company_nssf_number,Address,Email,Telephone) VALUES {tbv}'.format(tn=Company_name,tbv=table_values))
             db.commit()
+            db.close()
             return redirect(url_for('index'))
         except Exception as e:
             raise e
@@ -67,6 +68,7 @@ def department():
             c.execute('''CREATE TABLE IF NOT EXISTS Departments(Department VARCHAR(100) UNIQUE,Number_of_members VARCHAR(100))''')
             c.execute('Insert INTO Departments(Department,Number_of_members) VALUES {tbv}'.format(tbv=table_values))
             db.commit()
+            db.close()
             return redirect(url_for('department'))
         except Exception as e:
             raise e
@@ -80,109 +82,93 @@ def department():
 #     emp_id = query.fetchall()
 #     return render_template('employe_maintence.html',emp_id=emp_id)
 ###adding employee and removing employee
-@app.route('/Employee')
+@app.route('/Employee',methods=['POST','GET'])
 def Employee():
-    db = getConnection()
-    c = db.cursor()
-    query = c.execute('SELECT Emp_ID FROM Employee_Credentials')
-    emp_id = query.fetchall()
-    return render_template('employe_maintence.html',emp_id=emp_id)
-##adding employee
-@app.route('/Add',methods=['POST','GET'])
-def Add():
-    if request.method=='POST':
-        emp_id =request.form['emp_id']
-        tin_num=request.form['tin_num']
-        nssf_num=request.form['nssf_num']
-        designation=request.form['designation']
-        status = request.form['status']
-        join_date=request.form['join_date']
-        db=getConnection()
-        c=db.cursor()
+    data = []
+    if request.method == 'POST':
+        for form in request.form:
+            data.append(request.form[form])
+        table_data = tuple(data)
+        db = getConnection()
+        c = db.cursor()
         try:
-            c.execute('''CREATE TABLE IF NOT EXISTS Employee_Credentials
-            (Emp_ID VARCHAR(4000) UNIQUE,
-            TIN_Number VARCHAR(400) UNIQUE ,NSSF_Number VARCHAR(1000) UNIQUE ,
-            Designation VARCHAR(100), Employee_Status VARCHAR(100), Joining_Date DATE )''')
-            c.execute('''Insert INTO Employee_Credentials(Emp_ID,TIN_Number,NSSF_Number,Designation,
-            Employee_Status,Joining_Date) VALUES('{emp_id}','{tin_num}','{nssf_num}','{designation}','{status}','{join_date}')'''
-                      .format(emp_id=emp_id,tin_num=tin_num,nssf_num=nssf_num,designation=designation,status=status,join_date=join_date))
+            c.execute('''CREATE TABLE IF NOT EXISTS Employee_Data(Emp_ID VARCHAR(100),TIN_NUMBER VARCHAR(100),
+            NSSF_NUMBER VARCHAR(100),DESIGNATION VARCHAR(100),STATUS VARCHAR(100) ,JOIN_DATE DATE,FIRSTNAME VARCHAR(100),
+            LASTNAME VARCHAR(100),DOB DATE ,MARITAL_STATUS VARCHAR(100),GENDER VARCHAR(100),NATIONALITY VARCHAR(100),
+            CURRENT_ADDRESS VARCHAR(100),MOBILE VARCHAR(10),PHONE VARCHAR(10),EMAIL VARCHAR(100),ACCOUNT_NAME VARCHAR(100),
+            ACCOUNT_NUMBER VARCHAR(100) ,BANK_NAME VARCHAR(100),BANK_BRANCH VARCHAR(100))''')
 
+            c.execute('''INSERT INTO Employee_Data(Emp_ID,TIN_NUMBER,NSSF_NUMBER,DESIGNATION,STATUS,JOIN_DATE,FIRSTNAME,
+            LASTNAME,DOB,MARITAL_STATUS,GENDER,NATIONALITY,CURRENT_ADDRESS,MOBILE,PHONE,EMAIL,ACCOUNT_NAME,ACCOUNT_NUMBER,BANK_NAME
+            ,BANK_BRANCH)  VALUES {table_values}'''.format(table_values=table_data))
             db.commit()
-            return redirect(url_for('Fetch'))
-        except Exception as e:
-            raise e
-    return render_template('employe_maintence.html',emp_id=emp_id)
-##Add personal information to employees
-@app.route('/Personal_Infor',methods=['POST','GET'])
-def Personal_Infor():
-    if request.method=='POST':
-        ID = request.form['ID']
-        first_name = request.form['first_name']
-        last_name=request.form['last_name']
-        date_of_birth=request.form['date_of_birth']
-        marital_status=request.form['marital_status']
-        gender=request.form['gender']
-        nationality = request.form['nationality']
-        db=getConnection()
-        c=db.cursor()
-        try:
-            c.execute('''CREATE TABLE IF NOT EXISTS Personal_Infor(Emp_ID VARCHAR(4000) UNIQUE,
-                        Firstname VARCHAR(400) ,Lastname VARCHAR(400) ,DOB DATE , Marital_Status VARCHAR(100), 
-                        Gender VARCHAR(100) ,Nationality VARCHAR(400))''')
-            c.execute('''INSERT INTO Personal_Infor(Emp_ID,Firtname,Lastname,DOB,Marital_Status,Gender,Nationality) 
-            VALUES('{ID}','{first_name}','{last_name}','{date_of_birth}','{marital_status}','{gender}','nationality')'''.
-                      format(ID=ID,first_name=first_name,last_name=last_name,date_of_birth=date_of_birth,marital_status=marital_status,gender=gender,nationality=nationality))
-            db.commit()
-            return  redirect(url_for('Fetch'))
-        except Exception as e:
-            raise e
-    return render_template('employe_maintence.html')
-##Add employee contact information
-@app.route('/Contact_Infor',methods=['POST','GET'])
-def Contact_Infor():
-    if request.method=='POST':
-        ID = request.form['ID']
-        current_address=request.form['current_address']
-        mobile=request.form['mobile']
-        phone=request.form['phone']
-        email=request.form['email']
-        db=getConnection()
-        c=db.cursor()
-        try:
-            c.execute('''CREATE TABLE IF NOT EXISTS Contact_Infor(Emp_ID VARCHAR(4000) UNIQUE,
-                                    Current_Address VARCHAR(400) ,Mobile VARCHAR(400) ,Phone VARCHAR(100),Email VARCHAR(100))''')
-            c.execute('''INSERT INTO Contact_Infor(Emp_ID,Current_Address,Mobile,Phone,Email) 
-            VALUES('{ID}','{current_address}','{mobile}','{phone}','{email}')'''.
-                      format(ID=ID,current_address=current_address,mobile=mobile,phone=phone,email=email))
-            db.commit()
-            return redirect(url_for('Fetch'))
-        except Exception as e:
-            raise e
-    return render_template('employe_maintence.html')
-###Bank Information
-@app.route('/Bank_Infor',methods=['POST','GET'])
-def Bank_Infor():
-    if request.method=='POST':
-        ID=request.form['ID']
-        account_name=request.form['account_name']
-        account_number= request.form['account_number']
-        bank_name=request.form['bank_name']
-        bank_branch=request.form['bank_branch']
-        db=getConnection()
-        c=db.cursor()
-        try:
-            c.execute('''CREATE TABLE IF NOT EXISTS Bank_Infor(Emp_ID VARCHAR(4000) UNIQUE,Account_Name VARCHAR(400),Account_Number VARCHAR(400),Bank_Name VARCHAR(400),Bank_Branch VARCHAR(400) )''')
-            c.execute('''INSERT INTO Bank_Infor(Emp_ID,Account_Name,Account_Number,Bank_Name ,Bank_Branch) 
-            VALUES('{ID}','{account_name}','{account_number}','{bank_name}','{bank_branch}')'''.format(ID=ID,account_name=account_name,account_number=account_number,bank_name=bank_name,bank_branch=bank_branch))
-            db.commit()
-            return redirect(url_for('Fetch'))
+            db.close()
+            return redirect(url_for('Employee'))
         except Exception as e:
             raise e
     return render_template('employe_maintence.html')
 ####leave and attendance
 @app.route('/Leave')
 def Leave():
+    db = getConnection()
+    c = db.cursor()
+    query= c.execute('SELECT Firstname FROM Personal_Infor')
+    sql_rows =query.fetchall()
+    return render_template('leave.html',sql_rows=sql_rows)
+###Public holidays
+@app.route('/Holidays',methods=['POST','GET'])
+def Holidays():
+    data = []
+    if request.method=='POST':
+        for fm in request.form:
+            data.append(request.form[fm])
+        form_values =tuple(data[0:])
+        db=getConnection()
+        c=db.cursor()
+        try:
+            c.execute('''CREATE TABLE IF NOT EXISTS Holidays(Public_Holiday VARCHAR(4000) ,Public_Date DATE ,Personal_Event VARCHAR(100),Personal_Date DATE ,
+            Company_Event VARCHAR(100),Company_Event_Date DATE )''')
+            c.execute('Insert INTO Holidays(Public_Holiday,Public_Date,Personal_Event,Personal_Date,Company_Event,Company_Event_Date) VALUES {tbv}'.format(tbv=form_values))
+            db.commit()
+            db.close()
+        except Exception as e:
+            raise e
+    return render_template('leave.html')
+###sick leave
+@app.route('/Sick_Leave',methods=['POST','GET'])
+def Sick_Leave():
+    if request.method=='POST':
+        name=request.form['name']
+        start_date=request.form['start_date']
+        end_date=request.form['end_date']
+        db=getConnection()
+        c=db.cursor()
+        try:
+            c.execute('''CREATE TABLE IF NOT EXISTS Sick_Leave(Employee_Name VARCHAR(4000) ,Start_Date DATE ,End_Date DATE)''')
+            c.execute("Insert INTO Sick_Leave(Employee_Name,Start_Date,End_Date) VALUES('{name}','{start_date}','{end_date}')".format(name=name,start_date=start_date,end_date=end_date))
+            db.commit()
+            db.close()
+            return  redirect(url_for('Leave'))
+        except Exception as e:
+            raise
+    return render_template('leave.html')
+###Asign a vacation
+@app.route('/Vacation',methods=['POST','GET'])
+def Vacation():
+    if request.method=='POST':
+        name=request.form['name']
+        start_date=request.form['start_date']
+        end_date=request.form['end_date']
+        db = getConnection()
+        c = db.cursor()
+        try:
+            c.execute('''CREATE TABLE IF NOT EXISTS Vacation(Employee_Name VARCHAR(4000),Start_Date DATE ,End_Date DATE)''')
+            c.execute("Insert INTO Vacation(Employee_Name,Start_Date,End_Date) VALUES('{name}','{start_date}','{end_date}')".format(name=name, start_date=start_date, end_date=end_date))
+            db.commit()
+            db.close()
+            return  redirect(url_for('Leave'))
+        except Exception as e:
+            raise e
     return render_template('leave.html')
 ###set working days
 @app.route('/working_days')
@@ -199,11 +185,30 @@ def Department_list():
     c=db.cursor()
     query = c.execute('SELECT * FROM Departments')
     rows = query.fetchall()
+    db.close()
     return render_template('department_list.html',rows=rows)
 ##attendance
-@app.route('/Attendance')
+@app.route('/Attendance',methods=['POST','GET'])
 def Attendance():
-    return render_template('attendance.html')
+    db = getConnection()
+    c = db.cursor()
+    data = []
+    query0 = c.execute('SELECT Emp_ID  FROM Employee_Credentials')
+    rows0 = query0.fetchall()
+    data.append(rows0)
+    query1 = c.execute('SELECT Joining_Date FROM Employee_Credentials')
+    rows1 = query1.fetchall()
+    data.append(rows1)
+    for i in rows0:
+        query2 = c.execute('SELECT Firstname FROM Personal_Infor WHERE Firstname=={rows0}'.format(rows0=i))
+        rows2 = query2.fetchall()
+        data.append(rows2)
+    for x in rows2:
+        query3 = c.execute('SELECT Department FROM Roles WHERE Employee_name={rows1}'.format(rows1=x))
+        rows3 = query3.fetchall()
+        data.append(rows3)
+    print(data)
+    return render_template('attendance.html',)
 #####salary
 @app.route('/salary')
 def salary():
@@ -212,29 +217,29 @@ def salary():
 @app.route('/Salaries')
 def Salaries():
     return render_template('Salaries.html')
-##user settings
-@app.route('/update_settings')
-def update_settings():
-    try:
-        db = getConnection()
-        c = db.cursor()
-        query = c.execute('SELECT * FROM Roles')
-        rows = query.fetchall()
-        redirect('settings')
-    except Exception as e:
-        raise e
-    return render_template('settings.html', rows=rows)
+# ##user settings
+# @app.route('/update_settings')
+# def update_settings():
+#    if request.method=='POST':
+#        try:
+#            db = getConnection()
+#            c = db.cursor()
+#            query = c.execute('SELECT * FROM Roles')
+#            rows = query.fetchall()
+#            return redirect('settings')
+#     return render_template('settings.html', rows=rows)
 
 @app.route('/settings')
 def settings():
     db = getConnection()
     c = db.cursor()
-    sql = c.execute('SELECT Firstname FROM Personal_Infor')
+    query = c.execute('SELECT Firstname FROM Personal_Infor')
+    sql_rows = query.fetchall()
     depart = c.execute('SELECT Department FROM Departments')
     depart_row = depart.fetchall()
-    sql_row = sql.fetchall()
-    print(sql_row)
-    return render_template('settings.html', sql_row=sql_row,depart_row=depart_row)
+    query = c.execute('SELECT * FROM Roles')
+    rows = query.fetchall()
+    return render_template('settings.html', sql_rows=sql_rows,depart_row=depart_row, rows=rows)
 ##Assigning employees roles
 @app.route('/Role',methods=['POST','GET'])
 def Role():
@@ -250,7 +255,8 @@ def Role():
             c.execute('''INSERT INTO Roles(Employee_name,Role,Password,Department) VALUES('{name}','{role}','{password}','{department}')'''.
                       format(name=name,role=role,password=password,department=department))
             db.commit()
-            return redirect(url_for('update_settings'))
+            db.close()
+            return redirect(url_for('settings'))
         except Exception as e:
             raise e
     return render_template('settings.html')

@@ -41,7 +41,7 @@
                               <div class="form-group">
                                   <label><h6><strong>Employee Name</strong></h6></label>
                                   <select name="name">
-                                      {% for i in sql_row %}
+                                      {% for i in sql_rows %}
                                           {% for v in i %}
                                                <option>{{v}}</option>
                                               {% endfor %}
@@ -69,7 +69,7 @@
                               <div class="form-group">
                                   <label><h6><strong>Employee Name</strong></h6></label>
                                   <select name="name">
-                                      {% for i in sql_row %}
+                                      {% for i in sql_rows %}
                                           {% for v in i %}
                                                <option>{{v}}</option>
                                               {% endfor %}
