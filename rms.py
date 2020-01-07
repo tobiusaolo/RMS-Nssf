@@ -74,15 +74,6 @@ def department():
         except Exception as e:
             raise e
     return render_template('department.html')
-# ##Fetch employee data
-# @app.route('/Fetch')
-# def Fetch():
-#     db = getConnection()
-#     c = db.cursor()
-#     query = c.execute('SELECT Emp_ID FROM Employee_Credentials')
-#     emp_id = query.fetchall()
-#     return render_template('employe_maintence.html',emp_id=emp_id)
-###adding employee and removing employee
 @app.route('/Employee',methods=['POST','GET'])
 def Employee():
     data = []
@@ -97,11 +88,11 @@ def Employee():
             NSSF_NUMBER VARCHAR(100),DESIGNATION VARCHAR(100),STATUS VARCHAR(100) ,JOIN_DATE DATE,FIRSTNAME VARCHAR(100),
             LASTNAME VARCHAR(100),DOB DATE ,MARITAL_STATUS VARCHAR(100),GENDER VARCHAR(100),NATIONALITY VARCHAR(100),
             CURRENT_ADDRESS VARCHAR(100),MOBILE VARCHAR(10),PHONE VARCHAR(10),EMAIL VARCHAR(100),ACCOUNT_NAME VARCHAR(100),
-            ACCOUNT_NUMBER VARCHAR(100) ,BANK_NAME VARCHAR(100),BANK_BRANCH VARCHAR(100))''')
+            ACCOUNT_NUMBER VARCHAR(100) ,BANK_NAME VARCHAR(100),BANK_BRANCH VARCHAR(100),ATTENDANCE_STATUS VARCHAR(100))''')
 
             c.execute('''INSERT INTO Employee_Data(Emp_ID,TIN_NUMBER,NSSF_NUMBER,DESIGNATION,STATUS,JOIN_DATE,FIRSTNAME,
             LASTNAME,DOB,MARITAL_STATUS,GENDER,NATIONALITY,CURRENT_ADDRESS,MOBILE,PHONE,EMAIL,ACCOUNT_NAME,ACCOUNT_NUMBER,BANK_NAME
-            ,BANK_BRANCH)  VALUES {table_values}'''.format(table_values=table_data))
+            ,BANK_BRANCH,ATTENDANCE_STATUS)  VALUES {table_values}'''.format(table_values=table_data))
             db.commit()
             db.close()
             return redirect(url_for('Employee'))
@@ -113,7 +104,7 @@ def Employee():
 def Leave():
     db = getConnection()
     c = db.cursor()
-    query= c.execute('SELECT Firstname FROM Personal_Infor')
+    query= c.execute('SELECT FIRSTNAME FROM Employee_Data')
     sql_rows =query.fetchall()
     return render_template('leave.html',sql_rows=sql_rows)
 ###Public holidays
@@ -151,7 +142,7 @@ def Sick_Leave():
             db.close()
             return  redirect(url_for('Leave'))
         except Exception as e:
-            raise
+            raise e
     return render_template('leave.html')
 ###Asign a vacation
 @app.route('/Vacation',methods=['POST','GET'])
@@ -176,9 +167,51 @@ def Vacation():
 def working_days():
     return  render_template('working_days.html')
 ##employee list
-@app.route('/Employee_list')
+@app.route('/Employee_list',methods=['POST','GET'])
 def Employee_list():
-    return render_template('employee_list.html')
+    # df = []
+    db = getConnection()
+    c = db.cursor()
+    query = c.execute('''SELECT TIN_NUMBER,NSSF_NUMBER,STATUS,JOIN_DATE,FIRSTNAME,
+            LASTNAME,EMAIL,ATTENDANCE_STATUS FROM Employee_Data''')
+    rows = query.fetchall()
+    # t = db.cursor()
+    # sql = t.execute('''SELECT Employee_name,Role,Department FROM Roles''')
+    # sql_row = sql.fetchall()
+    # for i, x in zip(sql_row,rows):
+    #     data = i + x
+    #     df.append(data)
+    return render_template('employee_list.html',df=rows)
+##activate status
+@app.route('/activate',methods=['POST','GET'])
+def activate():
+    if request.method=='POST':
+        name = request.form['name']
+        db = getConnection()
+        d= db.cursor()
+        try:
+            d.execute('''UPDATE Employee_Data SET ATTENDANCE_STATUS=('Active') WHERE FIRSTNAME=('{nm}')'''.format(nm=name))
+            db.commit()
+            db.close()
+            return  redirect(url_for('Employee_list'))
+        except Exception as e:
+            raise e
+    return  render_template('employee_list.html')
+##Fire employee
+@app.route('/Fire_Employee',methods=['POST','GET'])
+def Fire_Employee():
+    if request.method=='POST':
+        name = request.form['name']
+        db = getConnection()
+        d= db.cursor()
+        try:
+            d.execute('''UPDATE Employee_Data SET ATTENDANCE_STATUS=('Inactive') WHERE FIRSTNAME=('{nm}')'''.format(nm=name))
+            db.commit()
+            db.close()
+            return  redirect(url_for('Employee_list'))
+        except Exception as e:
+            raise e
+    return render_template('employee_list.html.html')
 ##department list
 @app.route('/Department_list')
 def Department_list():
@@ -188,28 +221,36 @@ def Department_list():
     rows = query.fetchall()
     db.close()
     return render_template('department_list.html',rows=rows)
+###Delete department
+@app.route('/Delete_Department',methods=['POST','GET'])
+def Delete_Department():
+    if request.method=='POST':
+        depart=request.form['depart']
+        db=getConnection()
+        c=db.cursor()
+        try:
+            c.execute('''DELETE FROM Departments WHERE Department=('{nm}') '''.format(nm=depart))
+            db.commit()
+            db.close()
+            return redirect(url_for('Department_list'))
+        except Exception as e:
+            raise e
+    return  render_template('department_list.html')
 ##attendance
 @app.route('/Attendance',methods=['POST','GET'])
 def Attendance():
-    db = getConnection()
-    c = db.cursor()
-    data = []
-    query0 = c.execute('SELECT Emp_ID  FROM Employee_Credentials')
-    rows0 = query0.fetchall()
-    data.append(rows0)
-    query1 = c.execute('SELECT Joining_Date FROM Employee_Credentials')
-    rows1 = query1.fetchall()
-    data.append(rows1)
-    for i in rows0:
-        query2 = c.execute('SELECT Firstname FROM Personal_Infor WHERE Firstname=={rows0}'.format(rows0=i))
-        rows2 = query2.fetchall()
-        data.append(rows2)
-    for x in rows2:
-        query3 = c.execute('SELECT Department FROM Roles WHERE Employee_name={rows1}'.format(rows1=x))
-        rows3 = query3.fetchall()
-        data.append(rows3)
-    print(data)
-    return render_template('attendance.html',)
+    df = []
+    db=getConnection()
+    c=db.cursor()
+    query = c.execute('''SELECT JOIN_DATE,Emp_ID,FIRSTNAME FROM Employee_Data''')
+    rows = query.fetchall()
+    t=db.cursor()
+    sql = t.execute('''SELECT Role FROM Roles''')
+    sql_row = sql.fetchall()
+    for i,x in zip(rows,sql_row):
+        data = i+x
+        df.append(data)
+    return render_template('attendance.html',rows=df)
 #####salary
 @app.route('/salary')
 def salary():
@@ -314,6 +355,7 @@ def add_detail():
 @app.route('/Salaries')
 def Salaries():
     return render_template('Salaries.html')
+<<<<<<< HEAD
 # ##user settings
 # @app.route('/update_settings')
 # def update_settings():
@@ -401,11 +443,13 @@ def pay():
     Finance_row = query.fetchall()
     
     return render_template('pay.html',finance=Finance_row)
+=======
+>>>>>>> bcb8f3bab8c3b1926b461ff4cae29fe37465dcbf
 @app.route('/settings')
 def settings():
     db = getConnection()
     c = db.cursor()
-    query = c.execute('SELECT Firstname FROM Personal_Infor')
+    query = c.execute('SELECT FIRSTNAME FROM Employee_Data')
     sql_rows = query.fetchall()
     depart = c.execute('SELECT Department FROM Departments')
     depart_row = depart.fetchall()
@@ -413,6 +457,21 @@ def settings():
     rows = query.fetchall()
     
     return render_template('settings.html', sql_rows=sql_rows,depart_row=depart_row, rows=rows)
+##Delete user
+@app.route('/Delete_User',methods=['POST','GET'])
+def Delete_User():
+    if request.method=='POST':
+        name = request.form['name']
+        db=getConnection()
+        c=db.cursor()
+        try:
+            c.execute('''DELETE FROM Roles WHERE Employee_name=('{nm}') '''.format(nm=name))
+            db.commit()
+            db.close()
+            return  redirect(url_for('settings'))
+        except Exception as e:
+            raise  e
+    return  render_template('settings.html')
 ##Assigning employees roles
 @app.route('/Role',methods=['POST','GET'])
 def Role():
@@ -434,12 +493,20 @@ def Role():
             raise e
     return render_template('settings.html')
 ###change password
-@app.route('/Change_Password')
+@app.route('/Change_Password',methods=['POST','GET'])
 def Change_Password():
     if request.method=='POST':
         name = request.form['name']
-        c_password=request.form['cpassword']
         npassword = request.form['npassword']
+        db=getConnection()
+        c=db.cursor()
+        try:
+            c.execute('''UPDATE Roles SET Password =('{ps}') WHERE Employee_name=('{nm}')'''.format(ps=npassword, nm=name))
+            db.commit()
+            db.close()
+            return redirect(url_for('settings'))
+        except Exception as e:
+            raise e
     return render_template('settings.html')
 if __name__ == "__main__":
    app.run(debug=True, host='0.0.0.0', port=5000)
