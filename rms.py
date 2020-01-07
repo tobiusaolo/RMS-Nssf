@@ -83,6 +83,7 @@ def Employee():
         table_data = tuple(data)
         db = getConnection()
         c = db.cursor()
+        t=db.cursor()
         try:
             c.execute('''CREATE TABLE IF NOT EXISTS Employee_Data(Emp_ID VARCHAR(100),TIN_NUMBER VARCHAR(100),
             NSSF_NUMBER VARCHAR(100),DESIGNATION VARCHAR(100),STATUS VARCHAR(100) ,JOIN_DATE DATE,FIRSTNAME VARCHAR(100),
@@ -90,7 +91,7 @@ def Employee():
             CURRENT_ADDRESS VARCHAR(100),MOBILE VARCHAR(10),PHONE VARCHAR(10),EMAIL VARCHAR(100),ACCOUNT_NAME VARCHAR(100),
             ACCOUNT_NUMBER VARCHAR(100) ,BANK_NAME VARCHAR(100),BANK_BRANCH VARCHAR(100),ATTENDANCE_STATUS VARCHAR(100))''')
 
-            c.execute('''INSERT INTO Employee_Data(Emp_ID,TIN_NUMBER,NSSF_NUMBER,DESIGNATION,STATUS,JOIN_DATE,FIRSTNAME,
+            t.execute('''INSERT INTO Employee_Data(Emp_ID,TIN_NUMBER,NSSF_NUMBER,DESIGNATION,STATUS,JOIN_DATE,FIRSTNAME,
             LASTNAME,DOB,MARITAL_STATUS,GENDER,NATIONALITY,CURRENT_ADDRESS,MOBILE,PHONE,EMAIL,ACCOUNT_NAME,ACCOUNT_NUMBER,BANK_NAME
             ,BANK_BRANCH,ATTENDANCE_STATUS)  VALUES {table_values}'''.format(table_values=table_data))
             db.commit()
@@ -355,7 +356,7 @@ def add_detail():
 @app.route('/Salaries')
 def Salaries():
     return render_template('Salaries.html')
-<<<<<<< HEAD
+# <<<<<<< HEAD
 # ##user settings
 # @app.route('/update_settings')
 # def update_settings():
@@ -443,8 +444,8 @@ def pay():
     Finance_row = query.fetchall()
     
     return render_template('pay.html',finance=Finance_row)
-=======
->>>>>>> bcb8f3bab8c3b1926b461ff4cae29fe37465dcbf
+# =======
+# >>>>>>> bcb8f3bab8c3b1926b461ff4cae29fe37465dcbf
 @app.route('/settings')
 def settings():
     db = getConnection()
