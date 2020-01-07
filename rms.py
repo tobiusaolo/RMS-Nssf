@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlite3 import Error
 from glob import glob
 import csv
+from fpdf import FPDF, HTMLMixin
 
 app = Flask(__name__)
 
@@ -212,6 +213,102 @@ def Attendance():
 #####salary
 @app.route('/salary')
 def salary():
+    db = getConnection()
+    c = db.cursor()
+    try:
+        query = c.execute('SELECT * FROM Finances')
+        sql_rows = query.fetchall()
+    except Exception as e:
+        c = db.cursor()
+        c.execute('''CREATE TABLE  Finances(Employee_Name VARCHAR(100),Residence_type VARCHAR(50),Employee_type VARCHAR(100),Gross_pay VARCHAR(100),Nssf_contrb VARCHAR(100),Paye VARCHAR(100),Total_Dect VARCHAR(100),Net_pay VARCHAR(100))''')
+        db.commit()
+        return redirect(url_for('salary'))
+
+
+    db.close()   
+    return render_template('salary.html',data1=sql_rows)
+@app.route('/add_detail',methods=['POST','GET'])
+def add_detail():
+    detail=[]
+    if request.method == 'POST':
+        Employee_name=request.form['name']
+        detail.append(Employee_name)
+        residence_type=request.form['residence_nature']
+        detail.append(residence_type)
+        employee_type=request.form['emp_type']
+        detail.append(employee_type)
+        
+        basic_salary=request.form['bsalary']
+        detail.append(float(basic_salary))
+        #calculate NSSf contribution
+        #5% calculation
+        employee_contrnssf=0.05*float(basic_salary)
+        #employer NSSf contribution
+        employeer_contrnssf=0.1*float(basic_salary)
+        nssf_contribution = employee_contrnssf+employeer_contrnssf
+        detail.append(nssf_contribution)
+
+        #calculate payee
+       
+        if residence_type=='Resident':
+             #Paye for residents
+            if float(basic_salary)<235000:
+                paye=0
+                
+            elif float(basic_salary) in range(235000,335000):
+                paye=0.1*float(basic_salary)
+                
+            elif float(basic_salary) in range(335000,410000):
+                paye=10000 + 0.2*float(basic_salary)
+                
+            elif float(basic_salary)>410000:
+                paye=25000+0.3*float(basic_salary)
+                
+            elif float(basic_salary)>10000000:
+                paye=25000+0.3*float(basic_salary)+0.1*float(basic_salary)
+                
+            else:
+                print("Enter valid money for the employeee")
+
+        elif residence_type == 'Non-Resident':
+            #paye for non residents
+            if float(basic_salary)<335000:
+                paye=0.1*float(basic_salary)
+                
+            elif float(basic_salary) in range(335000,410000):
+                paye=33500 + 0.2*float(basic_salary)
+                
+            elif float(basic_salary)>410000:
+                paye=48500+0.3*float(basic_salary)
+                
+            elif float(basic_salary)>10000000:
+                paye=48500+0.3*float(basic_salary)+0.1*float(basic_salary)
+                
+            else:
+                print("Enter valid money for the employeee")
+
+
+        else:
+            print("warning this field is required !!!")
+        detail.append(paye)
+        tt_deductions=paye+nssf_contribution
+        detail.append(tt_deductions)
+        Net_salary=float(basic_salary)-tt_deductions
+        detail.append(Net_salary)
+        
+        arr=[str(i) for i in detail]
+        detail_data = tuple(arr)
+  
+        db = getConnection()
+        c = db.cursor()
+        try:
+            c.execute('''CREATE TABLE IF NOT EXISTS Finances(Employee_Name VARCHAR(100),Residence_type VARCHAR(50),Employee_type VARCHAR(100),Gross_pay VARCHAR(100),Nssf_contrb VARCHAR(100),Paye VARCHAR(100),Total_Dect VARCHAR(100),Net_pay VARCHAR(100))''')
+            c.execute('''Insert INTO Finances(Employee_Name,Residence_type,Employee_type,Gross_pay,Nssf_contrb,Paye,Total_Dect,Net_pay) VALUES {table_value}'''.format(table_value=detail_data))
+            db.commit()
+            db.close()
+            return  redirect(url_for('salary'))
+        except Exception as e:
+            raise e   
     return render_template('salary.html')
 ##employee salaries
 @app.route('/Salaries')
@@ -228,7 +325,82 @@ def Salaries():
 #            rows = query.fetchall()
 #            return redirect('settings')
 #     return render_template('settings.html', rows=rows)
+#Allowances
+@app.route('/gen_slip',methods=['POST','GET'])
+def gen_slip():
+    if request.method=='POST':
+        new_data=request.form['myFile']
+        print(new_data)
 
+        data=[1,2,3,4,5,6]
+
+        pdf = FPDF(format='letter')
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        pdf.write(5,str(new_data))
+        for i in data:
+            pdf.write(5,str(i))
+            pdf.ln()
+        pdf.output("home.pdf")
+
+    return render_template('pay.html')
+@app.route('/allowances')
+def allowances():
+    db = getConnection()
+    c = db.cursor()
+    try:
+        query = c.execute('SELECT * FROM Allowances')
+        allowance_rows = query.fetchall()
+    except Exception as e:
+        c = db.cursor()
+        c.execute('''CREATE TABLE  Allowances(Emp_Name VARCHAR(100),Allowance_type VARCHAR(100),Issue_Date DATE,Amount VARCHAR(100))''')
+        db.commit()
+        return redirect(url_for('allowances'))
+
+
+    db.close()   
+    return render_template('allowances.html',data1=allowance_rows)
+@app.route('/add_allowance',methods=('POST','GET'))
+def add_allowance():
+    allowance = []
+    if request.method == 'POST':
+        emp_name=request.form['a_empname']
+        allowance.append(emp_name)
+        allowance_type=request.form['a_type']
+        allowance.append(allowance_type)
+        Issue_date=request.form['a_date']
+        allowance.append(Issue_date)
+        amt=request.form['a_ammount']
+        allowance.append(amt)
+        arr2=[str(i) for i in allowance]
+        allowance_data = tuple(arr2)
+        db = getConnection()
+        c = db.cursor()
+        try:
+            c.execute('''CREATE TABLE IF NOT EXISTS Allowances(Emp_Name VARCHAR(100),Allowance_type VARCHAR(100),Issue_Date DATE,Amount VARCHAR(100))''')
+
+            c.execute('''INSERT INTO Allowances(Emp_Name,Allowance_type,Issue_Date,Amount)  VALUES {table_values}'''.format(table_values=allowance_data))
+            db.commit()
+            db.close()
+            return redirect(url_for('allowances'))
+        except Exception as e:
+            raise e
+
+    return render_template('allowances.html')
+
+@app.route('/pay')
+def pay():
+    db = getConnection()
+    c = db.cursor()
+    #name,department,date,amount,period
+    # query = c.execute('SELECT * FROM Employee_Data')
+    # emp_rows = query.fetchall()
+    # depart = c.execute('SELECT * FROM Departments')
+    # depart_row = depart.fetchall()
+    query = c.execute('SELECT * FROM Finances')
+    Finance_row = query.fetchall()
+    
+    return render_template('pay.html',finance=Finance_row)
 @app.route('/settings')
 def settings():
     db = getConnection()
@@ -239,6 +411,7 @@ def settings():
     depart_row = depart.fetchall()
     query = c.execute('SELECT * FROM Roles')
     rows = query.fetchall()
+    
     return render_template('settings.html', sql_rows=sql_rows,depart_row=depart_row, rows=rows)
 ##Assigning employees roles
 @app.route('/Role',methods=['POST','GET'])

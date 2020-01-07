@@ -1,0 +1,45 @@
+
+{% extends "base.html" %}
+{% block title %}Admin {% endblock title%}
+{% block content %}
+    <div class="content" xmlns="http://www.w3.org/1999/html">
+       <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-body " text-color="black">
+                <h3 class="card-title">Issue Payments</h3>
+                  <table id="example" class="table table-striped table-bordered" style="width:100%">
+                      <thead>
+                      <th>Name</th>
+                      <th>Total Deductions</th>
+                      <th>Net Salary</th>
+                      <th>Status</th>
+                      <th>Pay</th>
+                      <th>PaySlip</th>
+                      </thead>
+                      <tbody>
+                      {% for row in finance %}
+                      <tr><td>{{row[0]}}</td><td>{{row[6]}}</td><td>{{row[7]}}</td><td>Not Paid</td><td><button class="btn btn-success">Pay</button></td><td>
+                      <form action="{{url_for('gen_slip')}}" method="POST">
+                      <input type="hidden" name="myFile" value="1234"> 
+                      <input type="submit" value="PAY SLIP"></form> </td></tr>
+                      {% endfor %}
+                      
+                      </tbody>
+                  </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+                  
+               
+          </div> <script>
+                $(document).ready(function() {
+                    $('#example').DataTable();
+                } );
+            </script>
+
+        </div>
+      </div>
+{% endblock %}
