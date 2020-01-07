@@ -356,7 +356,10 @@ def add_detail():
 @app.route('/Salaries')
 def Salaries():
     return render_template('Salaries.html')
+<<<<<<< HEAD
 # <<<<<<< HEAD
+=======
+>>>>>>> 0b58afdb5891b88844d5ad6924345150fb1708ab
 # ##user settings
 # @app.route('/update_settings')
 # def update_settings():
@@ -444,8 +447,11 @@ def pay():
     Finance_row = query.fetchall()
     
     return render_template('pay.html',finance=Finance_row)
+<<<<<<< HEAD
 # =======
 # >>>>>>> bcb8f3bab8c3b1926b461ff4cae29fe37465dcbf
+=======
+>>>>>>> 0b58afdb5891b88844d5ad6924345150fb1708ab
 @app.route('/settings')
 def settings():
     db = getConnection()
@@ -510,4 +516,4 @@ def Change_Password():
             raise e
     return render_template('settings.html')
 if __name__ == "__main__":
-   app.run(debug=True, host='0.0.0.0', port=5000)
+   app.run()

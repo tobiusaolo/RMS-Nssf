@@ -1,0 +1,12 @@
+
+Flask==1.0.2
+Flask-Bootstrap==3.3.7.1
+Flask-Login==0.4.1
+Flask-SocketIO==4.2.1
+Flask-SQLAlchemy==2.3.2
+Flask-WTF==0.14.2
+flaskwebgui==0.0.7
+fpdf==1.7.2
+gunicorn==19.9.0
+Jinja2==2.10
+
