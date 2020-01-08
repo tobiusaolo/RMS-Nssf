@@ -355,7 +355,7 @@ def add_detail():
 ##employee salaries
 @app.route('/Salaries')
 def Salaries():
-<<<<<<< HEAD
+
     db = getConnection()
     c = db.cursor()
     gallowances = c.execute('SELECT * FROM Allowances')
@@ -365,9 +365,9 @@ def Salaries():
 
 
     return render_template('Salaries.html',rallowances=rallowances,rpay_list=rpay_list)
-=======
+
     return render_template('Salaries.html')
->>>>>>> 54b2294c68a4b058f201f26f63ae29e072e4f7c1
+
 # ##user settings
 # @app.route('/update_settings')
 # def update_settings():
@@ -491,12 +491,12 @@ def add_tpaylist():
         except Exception as e:
             raise e
     
-<<<<<<< HEAD
+
     return render_template('pay.html')
 
-=======
+
     return render_template('pay.html',finance=Finance_row)
->>>>>>> 54b2294c68a4b058f201f26f63ae29e072e4f7c1
+
 @app.route('/settings')
 def settings():
     db = getConnection()
