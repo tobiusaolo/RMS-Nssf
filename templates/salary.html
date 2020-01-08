@@ -8,18 +8,27 @@
             <div class="card ">
               <div class="card-body " text-color="black">
                 <h3 class="card-title">Manage Salary Details</h3>
-                  <h5 class="card-title">Deductions</h5>
+                  <h5 class="card-title">Employee Salary Structure & Deductions</h5>
+                  <input type="button" value="CSV" class="btn btn-primary">
+                 <input type="button" value="Copy" class="btn btn-success">
+                    <input type="button" value="Excel" class="btn btn-default">
+                    <input type="button" value="PDF" class="btn btn-secondary">
+                    <input type="button" value="Print" class="btn btn-success">
                   <table id="example" class="table table-striped table-bordered" style="width:100%">
+                
                       <thead>
-                      <th>Name</th>
-                      <th>PAYE</th>
-                      <th>NSSF Contribution</th>
-                      <th>Total Deductions</th>
-                      <th>Other Deductions</th>
+                                  <th>Name</th>
+                                  <th>Residence Type</th>
+                                  <th>Employee Type</th>
+                                  <th>GrossPay</th>
+                                  <th>Nssf Contribution</th>
+                                  <th>PAYE</th>
+                                  <th>TT Deductions</th>
+                                  <th>NetPay</th>
                       </thead>
                       <tbody>
-                      {% for row in data1 %}
-                      <tr><td>{{row[0]}}</td><td>{{row[5]}}</td><td>{{row[4]}}</td><td>{{row[6]}}</td><td>0</td></tr>
+                      {% for df in data1 %}
+                     <tr><td>{{df[0]}}</td><td>{{df[1]}}</td><td>{{df[2]}}</td><td>{{df[3]}}</td><td>{{df[4]}}</td><td>{{df[5]}}</td><td>{{df[6]}}</td><td>{{df[7]}}</td></tr>
                       {% endfor %}
                       
                       </tbody>
@@ -34,7 +43,7 @@
               <div class="card-group">
                   <div class="card">
                       <div class="card-body">
-                          <h5 class="card-title">Salary Structure </h5>
+                          <h5 class="card-title">Add Employee Salary </h5>
                           
                             <div class="form-group">
                                   <label><h6><strong>Employee Name</strong></h6></label>
