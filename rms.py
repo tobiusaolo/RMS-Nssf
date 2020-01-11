@@ -8,6 +8,7 @@ import os
 import numpy as np
 from PIL import Image
 from flask import Flask, render_template, url_for, request, jsonify, redirect, g
+from flask import Flask, render_template, url_for, request,jsonify,redirect,g,send_file
 from flaskwebgui import FlaskUI  # get the FlaskUI class
 from flask_wtf import FlaskForm
 from flask_bootstrap import Bootstrap
@@ -23,8 +24,9 @@ from fpdf import FPDF, HTMLMixin
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] ='sqlite:////home/ericpeter/RMS-Nssf/Database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] =os.path.join(app.instance_path, 'Database.db')
 db  = SQLAlchemy(app)
+db.init_app(app)
 
 class Data(db.Model):
     id = db.Column(db.Integer,primary_key=True)
@@ -452,7 +454,19 @@ def add_detail():
 ##employee salaries
 @app.route('/Salaries')
 def Salaries():
+
+    db = getConnection()
+    c = db.cursor()
+    gallowances = c.execute('SELECT * FROM Allowances')
+    rallowances =  gallowances.fetchall()
+    gpayment = c.execute('SELECT * FROM Payment')
+    rpay_list = gpayment.fetchall()
+
+
+    return render_template('Salaries.html',rallowances=rallowances,rpay_list=rpay_list)
+
     return render_template('Salaries.html')
+
 # ##user settings
 # @app.route('/update_settings')
 # def update_settings():
@@ -482,7 +496,7 @@ def gen_slip():
             pdf.ln()
         pdf.output("home.pdf")
 
-    return render_template('pay.html')
+    return send_file('home.pdf',as_attachment=True)
 @app.route('/allowances')
 def allowances():
     db = getConnection()
@@ -529,17 +543,59 @@ def add_allowance():
 
 @app.route('/pay')
 def pay():
+    
+    try:
+        db = getConnection()
+        c = db.cursor()
+        # #name,department,date,amount,period
+        # # query = c.execute('SELECT * FROM Employee_Data')
+        # # emp_rows = query.fetchall()
+        depart = c.execute('SELECT * FROM Finances')
+        depart_row = depart.fetchall()
+        pay_list = c.execute('SELECT * FROM Payment')
+        dpay_list = pay_list.fetchall()
+        
+    except Exception as e:
+        c = db.cursor()
+        c.execute('''CREATE TABLE IF NOT EXISTS Payment(Emp_Name VARCHAR(100),Salary VARCHAR(15),Paid_month VARCHAR(15),Issue_Date DATE)''')
+        db.commit()
+        return redirect(url_for('pay'))
+        
+    
+    return render_template('pay.html',pay_list=dpay_list,Finance=depart_row)
+    
+@app.route('/add_tpaylist',methods=['POST','GET'])
+def add_tpaylist():
+    list_data = []
     db = getConnection()
     c = db.cursor()
-    #name,department,date,amount,period
-    # query = c.execute('SELECT * FROM Employee_Data')
-    # emp_rows = query.fetchall()
-    # depart = c.execute('SELECT * FROM Departments')
-    # depart_row = depart.fetchall()
-    query = c.execute('SELECT * FROM Finances')
-    Finance_row = query.fetchall()
+    if request.method=='POST':
+        name=request.form['emp_id']
+        list_data.append(name)
+        salary=request.form['bsalary']
+        list_data.append(salary)
+        vmonth=request.form['vMonth']
+        list_data.append(vmonth)
+        vdate=request.form['vdate']
+        list_data.append(vdate)
+        arr3=[str(i) for i in list_data]
+        main_add = tuple(arr3)
+        try:
+            c.execute('''CREATE TABLE IF NOT EXISTS Payment(Emp_Name VARCHAR(100),Salary VARCHAR(15),Paid_month VARCHAR(15),Issue_Date DATE)''')
+           
+            c.execute('''INSERT INTO Payment(Emp_Name,Salary,Paid_month,Issue_Date)  VALUES {table_value}'''.format(table_value=main_add))
+            db.commit()
+            db.close()
+            return redirect(url_for('pay'))
+        except Exception as e:
+            raise e
     
+
+    return render_template('pay.html')
+
+
     return render_template('pay.html',finance=Finance_row)
+
 @app.route('/settings')
 def settings():
     db = getConnection()
@@ -605,3 +661,5 @@ def Change_Password():
     return render_template('settings.html')
 if __name__ == "__main__":
    app.run(debug=True)
+#    app.run(debug=True)
+   app.run( )
