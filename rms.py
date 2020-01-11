@@ -24,9 +24,9 @@ from fpdf import FPDF, HTMLMixin
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] =os.path.join(app.instance_path, 'Database.db')
+app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///Database.db'
 db  = SQLAlchemy(app)
-db.init_app(app)
+
 
 class Data(db.Model):
     id = db.Column(db.Integer,primary_key=True)
