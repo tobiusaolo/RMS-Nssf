@@ -1,7 +1,17 @@
-from flask import Flask, render_template, url_for, request,jsonify,redirect,g
+import base64
+import datetime
+from datetime import datetime
+import io
+from io import BytesIO
+import os
+
+import numpy as np
+from PIL import Image
+from flask import Flask, render_template, url_for, request, jsonify, redirect, g
 from flaskwebgui import FlaskUI  # get the FlaskUI class
 from flask_wtf import FlaskForm
 from flask_bootstrap import Bootstrap
+from werkzeug.utils import secure_filename
 from wtforms import TextField, SubmitField, TextAreaField , FieldList , FormField ,SelectField,Form,IntegerField,StringField
 from wtforms.validators import  Length, Email, Required
 import sqlite3
@@ -13,8 +23,23 @@ from fpdf import FPDF, HTMLMixin
 
 app = Flask(__name__)
 
-#creating a connection to the database
+app.config['SQLALCHEMY_DATABASE_URI'] ='sqlite:////home/ericpeter/RMS-Nssf/Database.db'
+db  = SQLAlchemy(app)
+
+class Data(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    company_name = db.Column(db.String(300))
+    Tin_numer = db.Column(db.String(300))
+    nssf_number = db.Column(db.String(300))
+    address = db.Column(db.String(300))
+    email = db.Column(db.String(300))
+    telephone = db.Column(db.String(300))
+    image=db.Column(db.LargeBinary)
+db.create_all()
+#creating a db to the database
 DATABASE  = 'Database.db'
+
+
 def getConnection():
     con = getattr(g,'_database',None)
     if con is None:
@@ -22,55 +47,82 @@ def getConnection():
     return con
 
 
+@app.route("/Profile", methods=["GET", "POST"])
+def Profile():
+    if request.method=='POST':
+        image = request.files['image']
+        img = image.read()
+        Company_name = request.form['c_name']
+        tin = request.form['c_tin']
+        c_nssf_num = request.form['c_nssf_num']
+        c_address = request.form['c_address']
+        c_email = request.form['c_email']
+        c_Tel = request.form['c_Tel']
+        ###insert data into the table in the sqlite database
+        new_file=Data(company_name=Company_name,Tin_numer=tin,
+                       nssf_number=c_nssf_num,address=c_address,
+                       email=c_email,telephone=c_Tel,image=img)
+        db.session.add(new_file)
+        db.session.commit()
+    return render_template('index.html')
+
 @app.route('/',methods=['POST','GET'])
 def index():
-    return render_template('index.html')
-##insert data into the database
-@app.route('/Profile',methods=['POST','GET'])
-def Profile():
-    data = []
+    file = Data.query.filter_by(id=1).first()
+    img = base64.b64encode(file.image).decode('ascii')
+    return render_template('index.html',img=img)
+
+##Edit company profile
+@app.route('/Edit_Profile',methods=['POST','GET'])
+def Edit_Profile():
+    data= Data.query.filter_by(id=1).first()
+    cname = data.company_name
+    tin=data.Tin_numer
+    nssf=data.nssf_number
+    address=data.address
+    email=data.email
+    tel=data.telephone
+    file = Data.query.filter_by(id=1).first()
+    img = base64.b64encode(file.image).decode('ascii')
+    return  render_template('edit.html',cname=cname,tin=tin,nssf=nssf,address=address,email=email,tel=tel,img=img)
+@app.route('/Update_Profile',methods=['POST','GET'])
+def Update_Profile():
     if request.method=='POST':
-        if request.files:
-            image = request.files['image']
-        Company_name = request.form['c_name']
-        # Company_tin = request.form['c_tin']
-        # Company_nssf_number = request.form['c_nssf_num']
-        # Address=request.form['c_address']
-        # Email = request.form['c_email']
-        # Telephone = request.form['c_Tel']
-        for v in request.form:
-            data.append(request.form[v])
-        #     data.append(image)
-        # print(data)
-        table_values = tuple(data[0:])
-        db=getConnection()
-        c=db.cursor()
+        image=request.files['image']
+        img = image.read()
+        company_name=request.form['company_name']
+        nssf=request.form['nssf']
+        tin=request.form['tin']
+        address=request.form['address']
+        email=request.form['email']
+        tel = request.form['tel']
         try:
-            c.execute('''CREATE TABLE  IF NOT EXISTS  {tn} (Logo BLOB,Company_name VARCHAR(100) UNIQUE ,Company_tin VARCHAR(100) ,
-            Company_nssf_number VARCHAR(100),Address VARCHAR(100)  ,Email  VARCHAR(100) ,Telephone  VARCHAR(100) )'''.format(tn=Company_name))
-            c.execute('Insert INTO {tn} (Company_name,Company_tin,Company_nssf_number,Address,Email,Telephone) VALUES {tbv}'.format(tn=Company_name,tbv=table_values))
-            db.commit()
-            db.close()
-            return redirect(url_for('index'))
-        except Exception as e:
+            df = db.session.query(Data).filter_by(id=1).one()
+            if df != []:
+                df.company_name = company_name
+                df.Tin_numer = tin
+                df.nssf_number = nssf
+                df.address = address
+                df.email = email
+                df.telephone = tel
+                db.session.add(df)
+                db.session.commit()
+                return redirect(url_for('Edit_Profile'))
+        except Exception as  e:
             raise e
-    return render_template('index.html')
+    return render_template('edit.html')
 ##adding department and list
 @app.route('/department',methods=['POST','GET'])
 def department():
-    data=[]
     if request.method=='POST':
-        for fm in request.form:
-            data.append(request.form[fm])
-        table_values = tuple(data[0:])
+        departments=request.form['departments']
         db=getConnection()
         c=db.cursor()
         try:
-            c.execute('''CREATE TABLE IF NOT EXISTS Departments(Department VARCHAR(100) UNIQUE,Number_of_members VARCHAR(100))''')
-            c.execute('Insert INTO Departments(Department,Number_of_members) VALUES {tbv}'.format(tbv=table_values))
+            c.execute("Insert INTO Departments(Department) VALUES('{tbv}')".format(tbv=departments))
             db.commit()
             db.close()
-            return redirect(url_for('department'))
+            return redirect(url_for('Department_list'))
         except Exception as e:
             raise e
     return render_template('department.html')
@@ -134,11 +186,12 @@ def Sick_Leave():
         name=request.form['name']
         start_date=request.form['start_date']
         end_date=request.form['end_date']
+        replacement=request.form['replacement']
         db=getConnection()
         c=db.cursor()
         try:
-            c.execute('''CREATE TABLE IF NOT EXISTS Sick_Leave(Employee_Name VARCHAR(4000) ,Start_Date DATE ,End_Date DATE)''')
-            c.execute("Insert INTO Sick_Leave(Employee_Name,Start_Date,End_Date) VALUES('{name}','{start_date}','{end_date}')".format(name=name,start_date=start_date,end_date=end_date))
+            c.execute('''CREATE TABLE IF NOT EXISTS Sick_Leave(Employee_Name VARCHAR(100),Replacement VARCHAR(100),Start_Date DATE ,End_Date DATE)''')
+            c.execute("Insert INTO Sick_Leave(Employee_Name,Replacement,Start_Date,End_Date) VALUES('{name}','{rep}','{start_date}','{end_date}')".format(name=name,rep=replacement,start_date=start_date,end_date=end_date))
             db.commit()
             db.close()
             return  redirect(url_for('Leave'))
@@ -152,11 +205,12 @@ def Vacation():
         name=request.form['name']
         start_date=request.form['start_date']
         end_date=request.form['end_date']
+        replacement = request.form['replacement']
         db = getConnection()
         c = db.cursor()
         try:
-            c.execute('''CREATE TABLE IF NOT EXISTS Vacation(Employee_Name VARCHAR(4000),Start_Date DATE ,End_Date DATE)''')
-            c.execute("Insert INTO Vacation(Employee_Name,Start_Date,End_Date) VALUES('{name}','{start_date}','{end_date}')".format(name=name, start_date=start_date, end_date=end_date))
+            c.execute('''CREATE TABLE IF NOT EXISTS Vacation(Employee_Name VARCHAR(4000),Replacement VARCHAR(100),Start_Date DATE ,End_Date DATE)''')
+            c.execute("Insert INTO Vacation(Employee_Name,Replacement,Start_Date,End_Date) VALUES('{name}','{rep}','{start_date}','{end_date}')".format(name=name,rep=replacement,start_date=start_date, end_date=end_date))
             db.commit()
             db.close()
             return  redirect(url_for('Leave'))
@@ -164,8 +218,20 @@ def Vacation():
             raise e
     return render_template('leave.html')
 ###set working days
-@app.route('/working_days')
+@app.route('/working_days',methods=['POST','GET'])
 def working_days():
+    if request.method=='POST':
+        data = request.form.getlist("day")
+        db=getConnection()
+        c=db.cursor()
+        try:
+            c.execute("""CREATE TABLE IF NOT EXISTS Working_days(Work_Day VARCHAR(100))""")
+            for d in data:
+                c.execute("""INSERT INTO Working_days(Work_Day) VALUES('{tbv}')""".format(tbv=d))
+            db.commit()
+            db.close()
+        except Exception as e:
+            raise e
     return  render_template('working_days.html')
 ##employee list
 @app.route('/Employee_list',methods=['POST','GET'])
@@ -214,14 +280,23 @@ def Fire_Employee():
             raise e
     return render_template('employee_list.html.html')
 ##department list
-@app.route('/Department_list')
+@app.route('/Department_list',methods=['POST','GET'])
 def Department_list():
     db=getConnection()
     c=db.cursor()
-    query = c.execute('SELECT * FROM Departments')
-    rows = query.fetchall()
-    db.close()
-    return render_template('department_list.html',rows=rows)
+    try:
+        query = c.execute('SELECT * FROM Departments')
+        # sql=c.execute('SELECT Department FROM Role')
+        # sql_rows=sql.fetchall().count()
+        rows = query.fetchall()
+        db.close()
+    except:
+        c.execute('''CREATE TABLE IF NOT EXISTS Departments(Department VARCHAR(100) UNIQUE,Number_of_members VARCHAR(100))''')
+        db.commit()
+        db.close()
+    return render_template('department.html',rows=rows)
+
+
 ###Delete department
 @app.route('/Delete_Department',methods=['POST','GET'])
 def Delete_Department():
@@ -243,7 +318,7 @@ def Attendance():
     df = []
     db=getConnection()
     c=db.cursor()
-    query = c.execute('''SELECT JOIN_DATE,Emp_ID,FIRSTNAME FROM Employee_Data''')
+    query = c.execute('''SELECT FIRSTNAME FROM Employee_Data''')
     rows = query.fetchall()
     t=db.cursor()
     sql = t.execute('''SELECT Role FROM Roles''')
@@ -251,7 +326,29 @@ def Attendance():
     for i,x in zip(rows,sql_row):
         data = i+x
         df.append(data)
-    return render_template('attendance.html',rows=df)
+    r = len(rows)
+    return render_template('attendance.html',rows=rows,r=r)
+###take attendance
+@app.route('/Take_Attendance',methods=['POST','GET'])
+def Take_Attendance():
+    data=[]
+    if request.method=='POST':
+        today=datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
+        for v in request.form:
+            data.append(request.form[v])
+        data.append(today)
+        table_insert = tuple(data)
+        db = getConnection()
+        c=db.cursor()
+        try:
+            c.execute("""CREATE TABLE IF NOT EXISTS Attendance(FIRSTNAME VARCHAR(100) ,Attendance VARCHAR(100),Day_Date DATE)""")
+            c.execute("""INSERT INTO Attendance(FIRSTNAME,Attendance,Day_Date) VALUES {tbv}""".format(tbv=table_insert))
+            db.commit()
+            db.close()
+            return  redirect(url_for('Attendance'))
+        except Exception as e:
+            raise  e
+    return render_template('attendance.html')
 #####salary
 @app.route('/salary')
 def salary():
@@ -507,4 +604,4 @@ def Change_Password():
             raise e
     return render_template('settings.html')
 if __name__ == "__main__":
-   app.run()
+   app.run(debug=True)
