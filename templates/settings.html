@@ -58,9 +58,9 @@
                                   <label><h6><strong>Employee Name</strong></h6></label>
                                   <select name="name">
                                       {% for i in sql_rows %}
-                                          {% for v in i %}
-                                               <option>{{v}}</option>
-                                              {% endfor %}
+{#                                          {% for v in i %}#}
+                                               <option>{{i.Firstname}}</option>
+{#                                              {% endfor %}#}
                                       {% endfor %}
                                   </select>
                               </div>
@@ -90,9 +90,9 @@
                                   <label><h6><strong>Employee Name</strong></h6></label>
                                   <select name="name">
                                       {% for i in sql_rows %}
-                                          {% for v in i %}
-                                               <option>{{v}}</option>
-                                              {% endfor %}
+{#                                          {% for v in i %}#}
+                                               <option>{{i.Firstname}}</option>
+{#                                              {% endfor %}#}
                                       {% endfor %}
                                   </select>
                               </div>

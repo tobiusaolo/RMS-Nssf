@@ -70,14 +70,14 @@
           <div class="col-md-12">
               <div class="row card-columns">
                   {% for i in rows %}
-                     {% for x in i %}
+{#                     {% for x in i %}#}
                             <div class="card-deck">
                              <div class="card" style="width:190px;" >
                                  <img class="card-img-top rounded-circle" src="{{url_for('static',filename='profile.png')}}" alt="Card image cap" style="width:190px;">
                                  <div class="card-body">
-                                     <h6>{{x}}</h6>
+                                     <h6>{{i.Firstname}}</h6>
                                      <form method="POST" action="{{url_for('Take_Attendance')}}">
-                                         <input type="hidden"  name="name" value="{{x}}">
+                                         <input type="hidden"  name="name" value="{{i.Firstname}}">
                                          <div class="text-lg-center">
                                              <div class="form-check form-check-inline">
                                                  <input type="radio" class="radio" id="radio-1" name="inlineMaterialRadiosExample" value="Present"><span>P</span>
@@ -100,7 +100,7 @@
                                  </div>
                              </div>
                             </div>
-                          {% endfor %}
+{#                          {% endfor %}#}
                   {% endfor %}
               </div>
             <script>

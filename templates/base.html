@@ -12,11 +12,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.1.3/darkly/bootstrap.min.css">
   <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
   <script type="text/javascript" src="{{url_for('static',filename='js/dynamic-form.js')}}"></script>
-  <style>
-
-        .container { margin: 150px auto; }
+  <link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js'></script>
+  <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+  <style type="text/css">
+      .container { margin: 150px auto; }
         h1 { margin-bottom: 50px; }
-      @import url(https://fonts.googleapis.com/css?family=Muli:400, 300);
+      @import url(https://fonts.googleapis.com/css?family=Muli:400,300);
 body { margin-top: 3%; }
 
 .calendar, .calendar_weekdays, .calendar_content {
@@ -94,7 +97,248 @@ button.switch-month {
 button.switch-month:hover {
     color: #87b633;
 }
+             * {
+    margin: 0;
+    padding: 0
+}
 
+html {
+    height: 100%
+}
+
+#grad1 {
+    background-color:skyblue;
+    background-image: linear-gradient(120deg, rgba(255, 251, 255, 1), skyblue)
+}
+
+#msform {
+    text-align: center;
+    position: relative;
+    margin-top:14px
+}
+
+#msform fieldset .form-card {
+    background: white;
+    border: 0 none;
+    border-radius: 0px;
+    box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.2);
+    padding: 20px 40px 30px 40px;
+    box-sizing: border-box;
+    width:95%;
+    margin: 0 3% 20px 3%;
+    position: relative
+}
+
+#msform fieldset {
+    background: white;
+    border: 0 none;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding-bottom: 20px;
+    position: relative
+}
+
+#msform fieldset:not(:first-of-type) {
+    display: none
+}
+
+#msform fieldset .form-card {
+    text-align: left;
+    color: #9E9E9E
+}
+
+#msform input,
+#msform textarea {
+    padding: 0px 8px 4px 8px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    border-radius: 0px;
+    margin-bottom: 25px;
+    margin-top: 2px;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: montserrat;
+    color: #2C3E50;
+    font-size: 16px;
+    letter-spacing: 1px
+}
+
+#msform input:focus,
+#msform textarea:focus {
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    border: none;
+    font-weight: bold;
+    border-bottom: 2px solid skyblue;
+    outline-width: 0
+}
+
+#msform .action-button {
+    width: 100px;
+    background: skyblue;
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    border-radius: 0px;
+    cursor: pointer;
+    padding: 10px 5px;
+    margin: 10px 5px
+}
+
+#msform .action-button:hover,
+#msform .action-button:focus {
+    box-shadow: 0 0 0 2px white, 0 0 0 3px skyblue
+}
+
+#msform .action-button-previous {
+    width: 100px;
+    background: #616161;
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    border-radius: 0px;
+    cursor: pointer;
+    padding: 10px 5px;
+    margin: 10px 5px
+}
+
+#msform .action-button-previous:hover,
+#msform .action-button-previous:focus {
+    box-shadow: 0 0 0 2px white, 0 0 0 3px #616161
+}
+
+select.list-dt {
+    border: none;
+    outline: 0;
+    border-bottom: 1px solid #ccc;
+    padding: 2px 5px 3px 5px;
+    margin: 2px
+}
+
+select.list-dt:focus {
+    border-bottom: 2px solid skyblue
+}
+
+.card {
+    z-index: 0;
+    border: none;
+    border-radius: 0.5rem;
+    position: relative
+}
+
+.fs-title {
+    font-size: 25px;
+    color: #2C3E50;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: left
+}
+
+#progressbar {
+    margin-bottom:15px;
+    overflow: hidden;
+    color: lightgrey
+}
+
+#progressbar .active {
+    color: #000000
+}
+
+#progressbar li {
+    list-style-type: none;
+    font-size: 12px;
+    width:16.5%;
+    float: left;
+    position: relative
+}
+
+#progressbar #account:before {
+    font-family: FontAwesome;
+    content:"\f14b"
+}
+
+#progressbar #personal:before {
+    font-family: FontAwesome;
+    content: "\f007"
+}
+
+#progressbar #payment:before {
+    font-family: FontAwesome;
+    content: "\f234"
+}
+
+#progressbar #confirm:before {
+    font-family: FontAwesome;
+    content:"\f09d"
+}
+#progressbar #education:before {
+    font-family: FontAwesome;
+    content:"\f19d"
+}
+#progressbar #work:before {
+    font-family: FontAwesome;
+    content:"\f0b1"
+}
+
+#progressbar li:before {
+    width: 50px;
+    height: 50px;
+    line-height: 45px;
+    display: block;
+    font-size: 18px;
+    color: #ffffff;
+    background: lightgray;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+    padding: 2px
+}
+
+#progressbar li:after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    background: lightgray;
+    position: absolute;
+    left: 0;
+    top: 25px;
+    z-index: -1
+}
+
+#progressbar li.active:before,
+#progressbar li.active:after {
+    background: skyblue
+}
+
+.radio-group {
+    position: relative;
+    margin-bottom: 25px
+}
+
+.radio {
+    display: inline-block;
+    border-radius: 0;
+    background: lightblue;
+    box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    cursor: pointer;
+    margin: 8px 2px
+}
+
+.radio:hover {
+    box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.3)
+}
+
+.radio.selected {
+    box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1)
+}
+
+.fit-image {
+    width: 100%;
+    object-fit: cover
+}
   </style>
   <!-- CSS Files -->
   <link  rel="stylesheet" type='text/css' href="{{url_for('static',filename='assets/css/bootstrap.min.css')}}" />
@@ -102,24 +346,36 @@ button.switch-month:hover {
   <link rel="stylesheet" type='text/css'  href="{{url_for('static',filename='assets/css/paper-dashboard.min.css')}}"  />
   <!-- CSS Just for demo purpose, don't include it in your project -->
   <link rel="stylesheet" type='text/css' href="{{url_for('static',filename='assets/demo/demo.css')}}"  />
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/util.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/main.css')}}">
+       <link rel="stylesheet" href="fonts/linearicons/style.css">
+
+		<!-- MATERIAL DESIGN ICONIC FONT -->
+		<link rel="stylesheet" href="fonts/material-design-iconic-font/css/material-design-iconic-font.css">
+
+		<!-- DATE-PICKER -->
+		<link rel="stylesheet" href="vendor/date-picker/css/datepicker.min.css">
+
+		<!-- STYLE CSS -->
+		<link rel="stylesheet" href="css/style.css">
 </head>
 <body class="">
-  <div class="wrapper ">
-    <div class="sidebar"  data-background-color="blue">
+  <div class="wrapper">
+    <div class="sidebar">
       <!--
         Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow"
     -->
       <div class="logo">
         <a href="" class="simple-text logo-mini">
           <div class="logo-image-small">
-            <img src="data:;base64,{{img}}" class="rounded"/>
+            <img src="data:;base64,{{img}}" class="rounded-circle" alt="No image"/>
           </div>
         </a>
         <a href="" class="simple-text logo-normal">
           RMS
-          <!-- <div class="logo-image-big">
-            <img src="../assets/img/logo-big.png">
-          </div> -->
+{#          <div class="logo-image-small">#}
+{#            <img src="data:;base64,{{img}}" class="rounded-circle" alt="No image"/>#}
+{#          </div>#}
         </a>
       </div>
       <div class="sidebar-wrapper">
@@ -288,6 +544,10 @@ button.switch-month:hover {
   <!-- Paper Dashboard DEMO methods, don't include it in your project! -->
   <script src="{{url_for('static',filename='assets/demo/demo.js')}}"></script>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+  <script src="{{url_for('static',filename='js/jquery-3.3.1.min2.js')}}"></script>
+
+		<!-- JQUERY STEP -->
+  <script src="{{url_for('static',filename='js/jquery.steps1.js')}}"></script>
   <script>
     $(document).ready(function() {
       // Javascript method's body can be found in assets/assets-for-demo/js/demo.js
@@ -710,6 +970,75 @@ button.switch-month:hover {
         return selected;
     }
 });
+         $(document).ready(function(){
+
+var current_fs, next_fs, previous_fs; //fieldsets
+var opacity;
+
+$(".next").click(function(){
+
+current_fs = $(this).parent();
+next_fs = $(this).parent().next();
+
+//Add Class Active
+$("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+
+//show the next fieldset
+next_fs.show();
+//hide the current fieldset with style
+current_fs.animate({opacity: 0}, {
+step: function(now) {
+// for making fielset appear animation
+opacity = 1 - now;
+
+current_fs.css({
+'display': 'none',
+'position': 'relative'
+});
+next_fs.css({'opacity': opacity});
+},
+duration: 600
+});
+});
+
+$(".previous").click(function(){
+
+current_fs = $(this).parent();
+previous_fs = $(this).parent().prev();
+
+//Remove class active
+$("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+
+//show the previous fieldset
+previous_fs.show();
+
+//hide the current fieldset with style
+current_fs.animate({opacity: 0}, {
+step: function(now) {
+// for making fielset appear animation
+opacity = 1 - now;
+
+current_fs.css({
+'display': 'none',
+'position': 'relative'
+});
+previous_fs.css({'opacity': opacity});
+},
+duration: 600
+});
+});
+
+$('.radio-group .radio').click(function(){
+$(this).parent().find('.radio').removeClass('selected');
+$(this).addClass('selected');
+});
+
+$(".submit").click(function(){
+return false;
+})
+
+});
+
 </script>
 
 </html>

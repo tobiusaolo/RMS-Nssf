@@ -18,9 +18,9 @@
               <div class="card-header ">
               	<form  method="POST" action="{{url_for('working_days')}}">
                    <!-- Default unchecked disabled -->
-                   <div class="form-group">
-                         <div class="custom-control custom-checkbox">
-                             <input type="checkbox" class="custom-control-input form-control" name="day" id="defaultCheckedDisabled1" value="Sunday" >
+{#                   <div class="form-group">#}
+                         <div class="custom-control custom-checkbox checkbox-lg">
+                             <input type="checkbox" class="custom-control-input form-control"  name="day" id="defaultCheckedDisabled1" value="Sunday" >
                              <label class="custom-control-label"for="defaultCheckedDisabled1"><strong>Sunday</strong></label>
                          </div>
                          <div class="custom-control custom-checkbox">
@@ -47,7 +47,7 @@
                            <input type="checkbox" class="custom-control-input" name="day" id="defaultCheckedDisabled7" value="Saturday">
                            <label class="custom-control-label" for="defaultCheckedDisabled7"><strong>Saturday</strong></label>
                        </div>
-                   </div>
+{#                   </div>#}
                     <div class="form-group">
                         <button class="btn btn-primary">Submit</button>
                     </div>
