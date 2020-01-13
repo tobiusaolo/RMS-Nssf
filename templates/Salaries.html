@@ -14,7 +14,9 @@
         </button>
       </h5>
      
-                  <input type="button" value="CSV" class="btn btn-primary">
+                  <form action="{{url_for('nssf_sub')}}" method="POST">
+                       
+                      <input type="submit" value="CSV"></form>
                   <input type="button" value="Copy" class="btn btn-success">
                   <input type="button" value="Excel" class="btn btn-default">
                   <input type="button" value="PDF" class="btn btn-secondary">
