@@ -466,13 +466,6 @@ def Salaries():
 
 
     return render_template('Salaries.html',rallowances=rallowances,rpay_list=rpay_list)
-
-   
-
-
-    return render_template('Salaries.html')
-
-
 # ##user settings
 # @app.route('/update_settings')
 # def update_settings():
