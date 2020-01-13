@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Admin {% endblock title%}
+{% block content %}
+    <div class="content" xmlns="http://www.w3.org/1999/html">
+       <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-body " text-color="black">
+                <h3 class="card-title">Edit Company Profile</h3>
+              </div>
+            </div>
+          </div>
+        </div> 
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+              	<form   action="{{url_for('Update_Profile')}}" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label><h6><strong>Company Logo</strong></h6></label>
+                        <div class="custom-file">
+                            <input  type="file" value="{{img}}" name="image" accept="image/*" >
+                            <label class="custom-file-label" for="customFile">Choose file</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label><h6><strong>Company Name</strong></h6></label>
+                            <input type="text" class="form-control" name="company_name" value="{{cname}}">
+                        </div>
+                        <div class="col">
+                            <label><h6><strong>Company NSSF Number</strong></h6></label>
+                            <input type="text" name="nssf" class="form-control" value="{{nssf}}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label><h6><strong>Company Tin</strong></h6></label>
+                            <input type="text" name="tin" class="form-control" value="{{tin}}">
+                        </div>
+                        <div class="col">
+                            <label><h6><strong>Company Address</strong></h6></label>
+                            <input type="text" name="address" class="form-control" value="{{address}}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label><h6><strong>Company Email</strong></h6></label>
+                            <input type="text" name="email" class="form-control" value="{{email}}">
+                        </div>
+                        <div class="col">
+                            <label><h6><strong>Company Telephone</strong></h6></label>
+                            <input type="text" name="tel" class="form-control" value="{{tel}}">
+                        </div>
+                    </div>
+                    <div class="form-group" align="right">
+                        <button class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+              </div>
+              <div class="card-body ">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+{% endblock %}
