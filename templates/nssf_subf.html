@@ -1,0 +1,56 @@
+
+{% extends "base.html" %}
+{% block title %}Admin {% endblock title%}
+{% block content %}
+    <div class="content" xmlns="http://www.w3.org/1999/html">
+        <div class="row">
+          <div class="col-md-12">
+          <form  method="POST" action="{{url_for('nssf_sub')}}">
+              <div class="card-group">
+                  <div class="card">
+                      <div class="card-body">
+                          <h5 class="card-title">NSSF Submission Form</h5>
+                            <div class="form-group">
+                                  <label><h6><strong>Enter Year</strong></h6></label>
+                                  <input type="text" name="year" class="form-control" required="True" placeholder="2019">
+                              </div>
+                              <div class="form-group">
+                                  <label><h6><strong>Choose Month to Submit</strong></h6></label>
+                                  <select name="sMonth">
+                                      
+                                      <option value="January">January</option>
+                                      <option value="February">February</option>
+                                      <option value="March">March</option>
+                                      <option value="April">April</option>
+                                      <option value="May">May</option>
+                                      <option value="June">June</option>
+                                      <option value="July">July</option>
+                                      <option value="August">August</option>
+                                      <option value="September">September</option>
+                                      <option value="October ">October</option>
+                                      <option value="November">November</option>
+                                      <option value="December">December</option>
+                                      
+                                  </select>
+                              </div>
+                              <div class="form-group">
+                                  <button class="btn btn-success">Submit File</button>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+                  
+                            
+                   
+                 
+                  </div>
+              </div>
+          </div> <script>
+                $(document).ready(function() {
+                    $('#example').DataTable();
+                } );
+            </script>
+
+        </div>
+      </div>
+{% endblock %}
