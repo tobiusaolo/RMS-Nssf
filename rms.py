@@ -466,12 +466,12 @@ def Salaries():
 
 
     return render_template('Salaries.html',rallowances=rallowances,rpay_list=rpay_list)
-<<<<<<< HEAD
+
    
-=======
+
 
     return render_template('Salaries.html')
->>>>>>> 5fe9dac3d8e10b58895325c438c4b8d7e0b0cb72
+
 
 # ##user settings
 # @app.route('/update_settings')
@@ -848,16 +848,10 @@ def add_tpaylist():
             return redirect(url_for('pay'))
         except Exception as e:
             raise e
-    
-
-    return render_template('pay.html')
-
-<<<<<<< HEAD
-=======
 
     return render_template('pay.html',finance=Finance_row)
 
->>>>>>> 5fe9dac3d8e10b58895325c438c4b8d7e0b0cb72
+
 @app.route('/settings')
 def settings():
     db = getConnection()
@@ -922,10 +916,9 @@ def Change_Password():
             raise e
     return render_template('settings.html')
 if __name__ == "__main__":
-   app.run(debug=True)
-<<<<<<< HEAD
+
 #    app.run( )
-=======
+
 #    app.run(debug=True)
    app.run( )
->>>>>>> 5fe9dac3d8e10b58895325c438c4b8d7e0b0cb72
+
