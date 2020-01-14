@@ -70,8 +70,11 @@ def Profile():
 
 @app.route('/',methods=['POST','GET'])
 def index():
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
+    try:
+        file = Data.query.filter_by(id=1).first()
+        img = base64.b64encode(file.image).decode('ascii')
+    except:
+        img="User"
     return render_template('index.html',img=img)
 
 ##Edit company profile
@@ -919,6 +922,6 @@ if __name__ == "__main__":
 
 #    app.run( )
 
-#    app.run(debug=True)
-   app.run( )
+   app.run(debug=True)
+#    app.run( )
 
