@@ -376,12 +376,10 @@ def activate():
 def Fire_Employee():
     if request.method=='POST':
         name = request.form['name']
-        db = getConnection()
-        d= db.cursor()
         try:
-            d.execute('''UPDATE Employee_Data SET ATTENDANCE_STATUS=('Inactive') WHERE FIRSTNAME=('{nm}')'''.format(nm=name))
-            db.commit()
-            db.close()
+            query_update=Employee_Data.query.filter_by(Firstname=name).first()
+            query_update.Attendance_Status='Inactive'
+            db.session.commit()
             return  redirect(url_for('Employee_list'))
         except Exception as e:
             raise e
@@ -464,11 +462,7 @@ def salary():
         db.commit()
         return redirect(url_for('salary'))
     db.close()   
-<<<<<<< HEAD
-    return render_template('salary.html',data1=sql_rows,img=img)
-=======
-    return render_template('salary.html',data1=sql_rows,emp_rows=emp_rows)
->>>>>>> ac2bebc8f1c9aada111b729050cd06c78524209d
+
 @app.route('/add_detail',methods=['POST','GET'])
 def add_detail():
     detail=[]
@@ -562,18 +556,13 @@ def Salaries():
     rallowances =  gallowances.fetchall()
     gpayment = c.execute('SELECT * FROM Payment')
     rpay_list = gpayment.fetchall()
-<<<<<<< HEAD
     file = Data.query.filter_by(id=1).first()
     img = base64.b64encode(file.image).decode('ascii')
     return render_template('Salaries.html',rallowances=rallowances,rpay_list=rpay_list,img=img)
 
     return render_template('Salaries.html')
 
-=======
 
-
-    return render_template('Salaries.html',rallowances=rallowances,rpay_list=rpay_list)
->>>>>>> ac2bebc8f1c9aada111b729050cd06c78524209d
 # ##user settings
 # @app.route('/update_settings')
 # def update_settings():
@@ -675,14 +664,7 @@ def allowances():
         return redirect(url_for('allowances'))
 
 
-    db.close()   
-<<<<<<< HEAD
-    return render_template('allowances.html',data1=allowance_rows,img=img)
-@app.route('/add_allowance',methods=('POST','GET'))
-=======
-    return render_template('allowances.html',data1=allowance_rows,arows=arows,serows=serows)
-@app.route('/add_allowance',methods=['POST','GET'])
->>>>>>> ac2bebc8f1c9aada111b729050cd06c78524209d
+    db.close()
 def add_allowance():
     dallowance=[]
     if request.method=='POST':
@@ -958,9 +940,7 @@ def add_tpaylist():
         except Exception as e:
             raise e
 
-    return render_template('pay.html',finance=Finance_row)
-
-
+    return render_template('pay.html')
 @app.route('/settings')
 def settings():
     db = getConnection()
