@@ -463,6 +463,11 @@ def salary():
         return redirect(url_for('salary'))
     db.close()   
 
+<<<<<<< HEAD
+=======
+    return render_template('salary.html',data1=sql_rows,emp_rows=emp_rows,img=img)
+
+>>>>>>> c8e7e2724d0f7c1807ece2d9b5508876f9689012
 @app.route('/add_detail',methods=['POST','GET'])
 def add_detail():
     detail=[]
@@ -556,13 +561,20 @@ def Salaries():
     rallowances =  gallowances.fetchall()
     gpayment = c.execute('SELECT * FROM Payment')
     rpay_list = gpayment.fetchall()
+<<<<<<< HEAD
+=======
+
+>>>>>>> c8e7e2724d0f7c1807ece2d9b5508876f9689012
     file = Data.query.filter_by(id=1).first()
     img = base64.b64encode(file.image).decode('ascii')
     return render_template('Salaries.html',rallowances=rallowances,rpay_list=rpay_list,img=img)
 
+<<<<<<< HEAD
     return render_template('Salaries.html')
 
 
+=======
+>>>>>>> c8e7e2724d0f7c1807ece2d9b5508876f9689012
 # ##user settings
 # @app.route('/update_settings')
 # def update_settings():
@@ -664,7 +676,14 @@ def allowances():
         return redirect(url_for('allowances'))
 
 
+<<<<<<< HEAD
     db.close()
+=======
+    db.close()   
+
+    return render_template('allowances.html',data1=allowance_rows,arows=arows,serows=serows,img=img)
+@app.route('/add_allowance',methods=('POST','GET'))
+>>>>>>> c8e7e2724d0f7c1807ece2d9b5508876f9689012
 def add_allowance():
     dallowance=[]
     if request.method=='POST':
