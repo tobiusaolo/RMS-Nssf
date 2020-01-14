@@ -40,7 +40,7 @@
                                   
                                   <select name="a_empname">
                                     {% for evalu in serows %}
-                                      <option value="{{evalu[0]}}">{{evalu[6]}}{{evalu[7]}}</option>
+                                      <option value="{{evalu.Emp_ID}}">{{evalu.Firstname}}{{evalu.Lastname}}</option>
                                       {% endfor %}
                                   </select>
                               </div>

@@ -49,7 +49,7 @@
                                   <label><h6><strong>Employee Name</strong></h6></label>
                                   <select name="name">
                                       {% for emp in emp_rows %}
-                                      <option value="{{emp[6]}}">{{emp[6]}}</option>
+                                      <option value="{{emp.Firstname}}">{{emp.Firstname}}</option>
                                       {% endfor %}
                                   </select>
 
