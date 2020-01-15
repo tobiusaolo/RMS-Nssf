@@ -19,7 +19,6 @@
                     <table id="example"  class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                     <th>Department Name</th>
-                    <th>Number of Members</th>
                     <th>Action</th>
                     </thead>
                     <tbody>
@@ -46,7 +45,7 @@
           <div class="col-md-12">
             <div class="card ">
               <div class="card-header ">
-              	<form action="{{url_for('department')}}" method="POST" enctype="multipart/form-data">
+              	<form action="{{url_for('Department_list')}}" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="comment"><h4><strong>Add Department:</strong></h4></label>
                         <input class="form-control" rows="5" id="comment" name="departments">

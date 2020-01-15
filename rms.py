@@ -33,7 +33,7 @@ db  = SQLAlchemy(app)
 class Data(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     company_name = db.Column(db.String(300))
-    Tin_numer = db.Column(db.String(300))
+    Tin_number = db.Column(db.String(300))
     nssf_number = db.Column(db.String(300))
     address = db.Column(db.String(300))
     email = db.Column(db.String(300))
@@ -141,11 +141,15 @@ def Profile():
         c_email = request.form['c_email']
         c_Tel = request.form['c_Tel']
         ###insert data into the table in the sqlite database
-        new_file=Data(company_name=Company_name,Tin_numer=tin,
-                       nssf_number=c_nssf_num,address=c_address,
-                       email=c_email,telephone=c_Tel,image=img)
-        db.session.add(new_file)
-        db.session.commit()
+        try:
+            new_file = Data(company_name=Company_name, Tin_number=tin,
+                            nssf_number=c_nssf_num, address=c_address,
+                            email=c_email, telephone=c_Tel, image=img)
+            db.session.add(new_file)
+            db.session.commit()
+            return redirect(url_for('index'))
+        except Exception as e:
+            raise e
     return render_template('index.html')
 
 @app.route('/',methods=['POST','GET'])
@@ -199,24 +203,21 @@ def Update_Profile():
 ##adding department and list
 @app.route('/department',methods=['POST','GET'])
 def department():
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
-    if request.method=='POST':
-        departments=request.form['departments']
-        db=getConnection()
-        c=db.cursor()
-        try:
-            c.execute("Insert INTO Departments(Department) VALUES('{tbv}')".format(tbv=departments))
-            db.commit()
-            db.close()
-            return redirect(url_for('Department_list'))
-        except Exception as e:
-            raise e
-    return render_template('department.html',img=img)
+    # file = Data.query.filter_by(id=1).first()
+    # img = base64.b64encode(file.image).decode('ascii')
+    db = getConnection()
+    c = db.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS Departments(Department VARCHAR(100) UNIQUE)''')
+    # query1 = c.execute('SELECT  Department ,COUNT(Employee_name) FROM Roles GROUP BY Department')
+    query = c.execute('SELECT  Department FROM  Departments')
+    rows = query.fetchall()
+    db.commit()
+    db.close()
+    return render_template('department.html',rows=rows)
 @app.route('/Employee',methods=['POST','GET'])
 def Employee():
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
+    # file = Data.query.filter_by(id=1).first()
+    # img = base64.b64encode(file.image).decode('ascii')
     if request.method == 'POST':
         emp_id=request.form['emp_id']
         tin_num=request.form['tin_num']
@@ -259,14 +260,14 @@ def Employee():
             return redirect(url_for('Employee'))
         except Exception as e:
             raise e
-    return render_template('employe_maintence.html',img=img)
+    return render_template('employe_maintence.html')
 ####leave and attendance
 @app.route('/Leave')
 def Leave():
     users = Employee_Data.query.all()
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
-    return render_template('leave.html',sql_rows=users,img=img)
+    # file = Data.query.filter_by(id=1).first()
+    # img = base64.b64encode(file.image).decode('ascii')
+    return render_template('leave.html',sql_rows=users)
 ###Public holidays
 @app.route('/Holidays',methods=['POST','GET'])
 def Holidays():
@@ -284,6 +285,7 @@ def Holidays():
             c.execute('Insert INTO Holidays(Public_Holiday,Public_Date,Personal_Event,Personal_Date,Company_Event,Company_Event_Date) VALUES {tbv}'.format(tbv=form_values))
             db.commit()
             db.close()
+            return  redirect(url_for('Leave'))
         except Exception as e:
             raise e
     return render_template('leave.html')
@@ -328,8 +330,6 @@ def Vacation():
 ###set working days
 @app.route('/working_days',methods=['POST','GET'])
 def working_days():
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
     if request.method=='POST':
         data = request.form.getlist("day")
         db=getConnection()
@@ -342,12 +342,10 @@ def working_days():
             db.close()
         except Exception as e:
             raise e
-    return  render_template('working_days.html',img=img)
+    return  render_template('working_days.html')
 ##employee list
 @app.route('/Employee_list',methods=['POST','GET'])
 def Employee_list():
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
     users = Employee_Data.query.all()
     # t = db.cursor()
     # sql = t.execute('''SELECT Employee_name,Role,Department FROM Roles''')
@@ -355,7 +353,7 @@ def Employee_list():
     # for i, x in zip(sql_row,rows):
     #     data = i + x
     #     df.append(data)
-    return render_template('employee_list.html',img=img,users=users)
+    return render_template('employee_list.html',users=users)
 ##activate status
 @app.route('/activate',methods=['POST','GET'])
 def activate():
@@ -389,17 +387,18 @@ def Fire_Employee():
 def Department_list():
     file = Data.query.filter_by(id=1).first()
     img = base64.b64encode(file.image).decode('ascii')
-    try:
-        db = getConnection()
-        c = db.cursor()
-        query = c.execute('SELECT  Department ,COUNT(Employee_name) FROM Roles GROUP BY Department')
-        rows = query.fetchall()
-        db.close()
-    except:
-        c.execute('''CREATE TABLE IF NOT EXISTS Departments(Department VARCHAR(100) UNIQUE,Number_of_members VARCHAR(100))''')
-        db.commit()
-        db.close()
-    return render_template('department.html',rows=rows,img=img)
+    if request.method=='POST':
+        departments=request.form['departments']
+        db=getConnection()
+        c=db.cursor()
+        try:
+            c.execute("Insert INTO Departments(Department) VALUES('{tbv}')".format(tbv=departments))
+            db.commit()
+            db.close()
+            return redirect(url_for('department'))
+        except Exception as e:
+            raise e
+    return render_template('department.html',img=img)
 
 ###Delete department
 @app.route('/Delete_Department',methods=['POST','GET'])
@@ -420,9 +419,9 @@ def Delete_Department():
 @app.route('/Attendance',methods=['POST','GET'])
 def Attendance():
     users = Employee_Data.query.all()
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
-    return render_template('attendance.html',rows=users,img=img)
+    # file = Data.query.filter_by(id=1).first()
+    # img = base64.b64encode(file.image).decode('ascii')
+    return render_template('attendance.html',rows=users)
 ###take attendance
 @app.route('/Take_Attendance',methods=['POST','GET'])
 def Take_Attendance():
@@ -449,11 +448,10 @@ def Take_Attendance():
 def salary():
     db = getConnection()
     c = db.cursor()
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
+    # file = Data.query.filter_by(id=1).first()
+    # img = base64.b64encode(file.image).decode('ascii')
     try:
-        emp_data=c.execute('SELECT * FROM Employee_Data')
-        emp_rows=emp_data.fetchall()
+        emp_rows=Employee_Data.query.all()
         query = c.execute('SELECT * FROM Finances')
         sql_rows = query.fetchall()
     except Exception as e:
@@ -461,10 +459,15 @@ def salary():
         c.execute('''CREATE TABLE  Finances(Employee_Name VARCHAR(100),Residence_type VARCHAR(50),Employee_type VARCHAR(100),Gross_pay VARCHAR(100),Nssf_contrb VARCHAR(100),Paye VARCHAR(100),Total_Dect VARCHAR(100),Net_pay VARCHAR(100))''')
         db.commit()
         return redirect(url_for('salary'))
+<<<<<<< HEAD
     db.close()   
 
     return render_template('salary.html',data1=sql_rows,emp_rows=emp_rows,img=img)
 
+=======
+    db.close()
+    return render_template('salary.html',data1=sql_rows,emp_rows=emp_rows)
+>>>>>>> 3d7c61da3f679694e2460d83d377b5bc78cc27c9
 @app.route('/add_detail',methods=['POST','GET'])
 def add_detail():
     detail=[]
@@ -551,9 +554,9 @@ def add_detail():
 ##employee salaries
 @app.route('/Salaries')
 def Salaries():
-
     db = getConnection()
     c = db.cursor()
+<<<<<<< HEAD
     gallowances = c.execute('SELECT * FROM Allowances')
     rallowances =  gallowances.fetchall()
     gpayment = c.execute('SELECT * FROM Payment')
@@ -561,6 +564,24 @@ def Salaries():
     file = Data.query.filter_by(id=1).first()
     img = base64.b64encode(file.image).decode('ascii')
     return render_template('Salaries.html',rallowances=rallowances,rpay_list=rpay_list,img=img)
+=======
+    try:
+        gallowances = c.execute('SELECT * FROM Allowances')
+        rallowances = gallowances.fetchall()
+        gpayment = c.execute('SELECT * FROM Payment')
+        rpay_list = gpayment.fetchall()
+    except:
+        c = db.cursor()
+        # creat allowances table is not existing
+        c.execute(
+            '''CREATE TABLE IF NOT EXISTS Allowances(Emp_Name VARCHAR(100),Allowance_type VARCHAR(100),Issue_Date DATE,Amount VARCHAR(100))''')
+        c.execute(
+            '''CREATE TABLE IF NOT EXISTS Payment(Emp_Name VARCHAR(100),Salary VARCHAR(15),Paid_month VARCHAR(15),pYear VARCHAR(10),Issue_Date DATE)''')
+        return redirect(url_for('Salaries'))
+    # file = Data.query.filter_by(id=1).first()
+    # img = base64.b64encode(file.image).decode('ascii')
+    return render_template('Salaries.html',rallowances=rallowances,rpay_list=rpay_list)
+>>>>>>> 3d7c61da3f679694e2460d83d377b5bc78cc27c9
 
 # ##user settings
 # @app.route('/update_settings')
@@ -580,8 +601,10 @@ def gen_slip():
         db = getConnection()
         c = db.cursor()
         new_data=request.form['myFile']
-        company_details=c.execute('SELECT * FROM  Artistry')
-        crows = company_details.fetchall()
+        crows=Data.query.all()
+        for i in crows:
+            cname = i.company_name
+            caddress=i.address
         gallowances = c.execute('''SELECT * FROM Allowances WHERE Emp_Name=('{nd}')'''.format(nd=new_data))
         rallowances =  gallowances.fetchall()
         gpayment = c.execute('''SELECT * FROM Payment WHERE Emp_Name=('{name}')'''.format(name=new_data))
@@ -595,9 +618,9 @@ def gen_slip():
         col_width = page_width/4
         th =12
         pdf.set_font("Arial", size=12)
-        pdf.multi_cell(200, 5, crows[0][1])
+        pdf.multi_cell(200, 5,cname)
         pdf.ln()
-        pdf.multi_cell(200, 5, crows[0][4])
+        pdf.multi_cell(200, 5,caddress)
         pdf.ln()
         pdf.multi_cell(200, 5, 'Monthly Payslip')
         pdf.ln()
@@ -640,12 +663,11 @@ def gen_slip():
 def allowances():
     db = getConnection()
     c = db.cursor()
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
+    # file = Data.query.filter_by(id=1).first()
+    # img = base64.b64encode(file.image).decode('ascii')
     try:
         #select employe name from employee table
-        semploy=c.execute('SELECT * FROM Employee_Data')
-        serows=semploy.fetchall()
+        serows=Employee_Data.query.all()
         #select allowance type from allowance type table
         atype = c.execute('SELECT * FROM Allowance_types')
         arows = atype.fetchall()
@@ -661,9 +683,14 @@ def allowances():
         c.execute('''CREATE TABLE IF NOT EXISTS Allowance_types(Allowance_id VARCHAR(100),Allowance_type VARCHAR(100),Creation_Date DATE)''')
         db.commit()
         return redirect(url_for('allowances'))
+<<<<<<< HEAD
 
 
     db.close()
+=======
+    return render_template('allowances.html',data1=allowance_rows,arows=arows,serows=serows)
+@app.route('/add_allowance',methods=('POST','GET'))
+>>>>>>> 3d7c61da3f679694e2460d83d377b5bc78cc27c9
 def add_allowance():
     dallowance=[]
     if request.method=='POST':
@@ -718,8 +745,7 @@ def deductions():
     c = db.cursor()
     try:
         #select employe name from employee table
-        semploy=c.execute('SELECT * FROM Employee_Data')
-        serows=semploy.fetchall()
+        serows=Employee_Data.query.all()
         #select allowance type from allowance type table
         dtype = c.execute('SELECT * FROM Deduction_types')
         drows = dtype.fetchall()
@@ -782,11 +808,9 @@ def compute_deduction():
         try:
             c.execute('''INSERT INTO Deduction(Emp_Name,deduction_type,Issue_Date,Amount)  VALUES {table_values}'''.format(table_values=edd_data))
             db.commit()
-            db.close()
             return redirect(url_for('deductions'))
         except Exception as e:
             raise e
-
     return render_template('deductions.html')
 #NSSF submission
 @app.route('/nssf')
@@ -800,14 +824,21 @@ def nssf_sub():
         
         db = getConnection()
         c = db.cursor()
-        company_details=c.execute('SELECT * FROM  Artistry')
-        crows = company_details.fetchall()
-
-        
-        ford=c.execute("select Employee_Data.Emp_ID,Employee_Data.Emp_ID,Employee_Data.NSSF_NUMBER,Finances.Residence_type,Employee_Data.FIRSTNAME,Finances.Gross_pay,Finances.Nssf_contrb,Finances.Paye,Finances.Total_Dect,Employee_Data.MOBILE from Payment JOIN Finances ON(Payment.Emp_Name=Finances.Employee_Name) JOIN Employee_Data ON(Payment.Emp_Name= Employee_Data.FIRSTNAME) WHERE Payment.Paid_month=('{nmonth}')".format(nmonth=submonth))
+        # company_details=c.execute('SELECT * FROM  Artistry')
+        crows =Data.query.all()
+        for i in crows:
+            cname=i.company_name
+            nssf_number=i.nssf_number
+        ford=c.execute("""SELECT  employee__data.Emp_ID,
+        employee__data.Emp_ID,employee__data.Nssf_Number,
+        Finances.Residence_type,employee__data.Firstname,
+        Finances.Gross_pay,Finances.Nssf_contrb,Finances.Paye,
+        Finances.Total_Dect,employee__data.Mobile FROM Payment JOIN Finances ON(Payment.Emp_Name=Finances.Employee_Name) JOIN employee__data ON(Payment.Emp_Name= employee__data.Firstname) WHERE Payment.Paid_month=('{nmonth}') AND  Payment.pYear=('{yr}')"""
+                       .format(nmonth=submonth,yr=syear))
         drows = ford.fetchall()
+        print(drows)
         #sum
-        tsum=c.execute("select SUM(Finances.Total_Dect)from Payment JOIN Finances ON(Payment.Emp_Name=Finances.Employee_Name) JOIN Employee_Data ON(Payment.Emp_Name= Employee_Data.FIRSTNAME) WHERE Payment.Paid_month=('{nmonth}')".format(nmonth=submonth))
+        tsum=c.execute("select SUM(Finances.Total_Dect)from Payment JOIN Finances ON(Payment.Emp_Name=Finances.Employee_Name) JOIN employee__data ON(Payment.Emp_Name= employee__data.Firstname) WHERE Payment.Paid_month=('{nmonth}')".format(nmonth=submonth))
         tsumval = tsum.fetchall()
 
         workbook = xlsxwriter.Workbook('nssf.xlsx')
@@ -816,8 +847,8 @@ def nssf_sub():
         cell_format = workbook.add_format()
      #create a format to use in the merged range
         cell_format.set_font_color('Sliver')
-        coname=crows[0][1]
-        nssf=crows[0][3]
+        coname=cname
+        nssf=nssf_number
         ttr=1233333
         # print(tsumval[0][0])
     
@@ -889,8 +920,8 @@ def nssf_sub():
 
 @app.route('/pay')
 def pay():
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
+    # file = Data.query.filter_by(id=1).first()
+    # img = base64.b64encode(file.image).decode('ascii')
     try:
         db = getConnection()
         c = db.cursor()
@@ -909,7 +940,7 @@ def pay():
         return redirect(url_for('pay'))
         
     
-    return render_template('pay.html',pay_list=dpay_list,Finance=depart_row,img=img)
+    return render_template('pay.html',pay_list=dpay_list,Finance=depart_row)
     
 @app.route('/add_tpaylist',methods=['POST','GET'])
 def add_tpaylist():
@@ -940,18 +971,46 @@ def add_tpaylist():
             raise e
 
     return render_template('pay.html')
-@app.route('/settings')
+
+@app.route('/settings',methods=['POST','GET'])
 def settings():
     db = getConnection()
     c = db.cursor()
+    d=db.cursor()
+    # file = Data.query.filter_by(id=1).first()
+    # img = base64.b64encode(file.image).decode('ascii')
     users = Employee_Data.query.all()
-    depart = c.execute('SELECT Department FROM Departments')
-    depart_row = depart.fetchall()
-    query = c.execute('SELECT * FROM Roles')
-    rows = query.fetchall()
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
-    return render_template('settings.html', sql_rows=users,depart_row=depart_row, rows=rows,img=img)
+    try:
+        query = c.execute('SELECT * FROM Roles')
+        rows = query.fetchall()
+        depart = d.execute('SELECT Department FROM Departments')
+        depart_row = depart.fetchall()
+    except:
+        c.execute(
+            '''CREATE TABLE IF NOT EXISTS Roles(Employee_name VARCHAR(100),Role VARCHAR(100),Password VARCHAR(100),Department VARCHAR(100))''')
+        db.commit()
+        return redirect('settings')
+    db.close()
+    return render_template('settings.html',rows=rows,sql_rows=users,depart_row=depart_row)
+##Assigning employees roles
+@app.route('/Role',methods=['POST','GET'])
+def Role():
+    if request.method=='POST':
+        name=request.form['name']
+        role=request.form['role']
+        password=request.form['password']
+        department=request.form['department']
+        try:
+            db = getConnection()
+            c = db.cursor()
+            c.execute("""INSERT INTO Roles(Employee_name,Role,Password,Department) VALUES('{name}','{role}','{password}','{department}')""".
+                      format(name=name,role=role,password=password,department=department))
+            db.commit()
+            db.close()
+            return redirect(url_for('settings'))
+        except Exception as e:
+            raise e
+    return render_template('settings.html')
 ##Delete user
 @app.route('/Delete_User',methods=['POST','GET'])
 def Delete_User():
@@ -967,28 +1026,6 @@ def Delete_User():
         except Exception as e:
             raise  e
     return  render_template('settings.html')
-##Assigning employees roles
-@app.route('/Role',methods=['POST','GET'])
-def Role():
-    db = getConnection()
-    c = db.cursor()
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
-    if request.method=='POST':
-        name=request.form['name']
-        role=request.form['role']
-        password=request.form['password']
-        department=request.form['department']
-        try:
-            c.execute('''CREATE TABLE IF NOT EXISTS Roles(Employee_name VARCHAR(100),Role VARCHAR(100),Password VARCHAR(100),Department VARCHAR(100))''')
-            c.execute('''INSERT INTO Roles(Employee_name,Role,Password,Department) VALUES('{name}','{role}','{password}','{department}')'''.
-                      format(name=name,role=role,password=password,department=department))
-            db.commit()
-            db.close()
-            return redirect(url_for('settings'))
-        except Exception as e:
-            raise e
-    return render_template('settings.html',img=img)
 ###change password
 @app.route('/Change_Password',methods=['POST','GET'])
 def Change_Password():
@@ -1009,6 +1046,11 @@ if __name__ == "__main__":
 
 #    app.run( )
 
+<<<<<<< HEAD
    app.run(debug=True)
 #    app.run( )
+=======
+   # app.run(debug=True)
+   app.run( )
+>>>>>>> 3d7c61da3f679694e2460d83d377b5bc78cc27c9
 
