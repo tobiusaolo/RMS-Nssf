@@ -4,10 +4,12 @@ from datetime import datetime
 import io
 from io import BytesIO
 import os
+
+from requests import session
 from sqlalchemy.orm import load_only
 import numpy as np
 from PIL import Image
-from flask import Flask, render_template, url_for, request, jsonify, redirect, g
+from flask import Flask, render_template, url_for, request, jsonify, redirect, g, flash
 from flask import Flask, render_template, url_for, request,jsonify,redirect,g,send_file
 from flaskwebgui import FlaskUI  # get the FlaskUI class
 from flask_wtf import FlaskForm
@@ -26,6 +28,7 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///Database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 autoflush=True
 db  = SQLAlchemy(app)
 
@@ -171,8 +174,11 @@ def Edit_Profile():
     address=data.address
     email=data.email
     tel=data.telephone
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
+    try:
+        file = Data.query.filter_by(id=1).first()
+        img = base64.b64encode(file.image).decode('ascii')
+    except:
+        img = "User"
     return  render_template('edit.html',cname=cname,tin=tin,nssf=nssf,address=address,email=email,tel=tel,img=img)
 @app.route('/Update_Profile',methods=['POST','GET'])
 def Update_Profile():
@@ -387,18 +393,26 @@ def Fire_Employee():
 def Department_list():
     file = Data.query.filter_by(id=1).first()
     img = base64.b64encode(file.image).decode('ascii')
+    error = None
     if request.method=='POST':
         departments=request.form['departments']
         db=getConnection()
         c=db.cursor()
+        query =c.execute("""SELECT Department FROM Departments WHERE Department ='{dn}' """.format(dn=departments))
+        data =query.fetchone()
         try:
-            c.execute("Insert INTO Departments(Department) VALUES('{tbv}')".format(tbv=departments))
-            db.commit()
-            db.close()
+            if data:
+                message = "Department exists"
+                flash(message)
+            else:
+                c.execute("Insert INTO Departments(Department) VALUES('{tbv}')".format(tbv=departments))
+                error = 'Successfully inserted'
+                db.commit()
+                db.close()
             return redirect(url_for('department'))
         except Exception as e:
-            raise e
-    return render_template('department.html',img=img)
+                raise e
+    return render_template('department.html')
 
 ###Delete department
 @app.route('/Delete_Department',methods=['POST','GET'])
@@ -411,7 +425,7 @@ def Delete_Department():
             c.execute('''DELETE FROM Departments WHERE Department=('{nm}') '''.format(nm=depart))
             db.commit()
             db.close()
-            return redirect(url_for('Department_list'))
+            return redirect(url_for('department'))
         except Exception as e:
             raise e
     return  render_template('department_list.html')
@@ -1023,6 +1037,6 @@ if __name__ == "__main__":
 
 #    app.run( )
 
-   # app.run(debug=True)
-   app.run( )
+   app.run(debug=True)
+   # app.run( )
 
