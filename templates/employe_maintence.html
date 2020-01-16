@@ -10,7 +10,7 @@
             <div class="card">
                 <div class="row">
                     <div class="col-md-12">
-                        <form id="msform"   method="POST" action="{{url_for('Employee')}}"
+                        <form id="msform"   method="POST" action="{{url_for('add_employee')}}"
                               align="center" class="needs-validation" enctype="multipart/form-data" data-toggle="validator"  novalidate>
                             <!-- progressbar -->
                             <ul id="progressbar">
@@ -48,6 +48,13 @@
                                             <option value="Probation" name="Probation">Probation</option>
                                         </select>
                                     </div>
+                                    <div class="form-group">
+                                  <label><h6><strong>Resident</strong></h6></label>
+                                  <select name="residence_nature">
+                                      <option value="Resident">Yes</option>
+                                      <option value="Non-Resident">No</option>
+                                  </select>
+                              </div>
                                     <div class="form-group">
                                         <label><h6><strong>Joining Date</strong></h6></label>
                                         <input type="date" name="join_date" class="form-control" required="True">
@@ -181,7 +188,11 @@
                                     </div>
                                     <div class="form-group">
                                         <label><h6><strong>Department</strong></h6></label>
-                                        <input type="text" name="department" class="form-control" required="True">
+                                        <select name="department">
+                                      {% for i in rows %}
+                                      <option value="{{i[0]}}">{{i[0]}}</option>
+                                      {% endfor %}
+                                  </select>
                                     </div>
                                     <div class="form-group">
                                         <label><h6><strong>Supervisor:</strong></h6></label>
