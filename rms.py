@@ -10,7 +10,7 @@ from sqlalchemy.orm import load_only
 import numpy as np
 from PIL import Image
 
-from flask import Flask, render_template, url_for, request,jsonify,redirect,g,send_file,Response
+from flask import Flask, render_template, url_for, request,jsonify,redirect,g,send_file,Response,flash
 from flaskwebgui import FlaskUI  # get the FlaskUI class
 from flask_wtf import FlaskForm
 from flask_bootstrap import Bootstrap
@@ -1053,7 +1053,7 @@ if __name__ == "__main__":
 
 #    app.run( )
 
-#    app.run(debug=True)
-   app.run( )
+   app.run(debug=True)
+#    app.run( )
 
 
