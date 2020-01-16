@@ -652,7 +652,7 @@ def gen_slip():
 
         # pdf.output("home.pdf")
 
-    return Response(pdf.output(dest='S'), mimetype='application/pdf', headers={'Content-Disposition':'attachment;filename=pay_slip.pdf'})
+    return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf', headers={'Content-Disposition':'attachment;filename=pay_slip.pdf'})
 @app.route('/allowances')
 def allowances():
     db = getConnection()
