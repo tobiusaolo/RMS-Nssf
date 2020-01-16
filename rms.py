@@ -9,12 +9,8 @@ from requests import session
 from sqlalchemy.orm import load_only
 import numpy as np
 from PIL import Image
-<<<<<<< HEAD
-from flask import Flask, render_template, url_for, request, jsonify, redirect, g, flash
-from flask import Flask, render_template, url_for, request,jsonify,redirect,g,send_file
-=======
+
 from flask import Flask, render_template, url_for, request,jsonify,redirect,g,send_file,Response
->>>>>>> 5663d544939dadbb8acf02105ba6ca9f17e555f4
 from flaskwebgui import FlaskUI  # get the FlaskUI class
 from flask_wtf import FlaskForm
 from flask_bootstrap import Bootstrap
@@ -1057,11 +1053,7 @@ if __name__ == "__main__":
 
 #    app.run( )
 
-<<<<<<< HEAD
-   app.run(debug=True)
-   # app.run( )
-=======
 #    app.run(debug=True)
    app.run( )
->>>>>>> 5663d544939dadbb8acf02105ba6ca9f17e555f4
+
 
