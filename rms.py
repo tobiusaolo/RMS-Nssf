@@ -9,8 +9,12 @@ from requests import session
 from sqlalchemy.orm import load_only
 import numpy as np
 from PIL import Image
+<<<<<<< HEAD
 from flask import Flask, render_template, url_for, request, jsonify, redirect, g, flash
 from flask import Flask, render_template, url_for, request,jsonify,redirect,g,send_file
+=======
+from flask import Flask, render_template, url_for, request,jsonify,redirect,g,send_file,Response
+>>>>>>> 5663d544939dadbb8acf02105ba6ca9f17e555f4
 from flaskwebgui import FlaskUI  # get the FlaskUI class
 from flask_wtf import FlaskForm
 from flask_bootstrap import Bootstrap
@@ -61,6 +65,7 @@ class Employee_Data(db.Model):
     Nssf_Number = db.Column(db.String(300))
     Designation=db.Column(db.String(300))
     Employee_Status = db.Column(db.String(300))
+    Residence_type=db.Column(db.String(20))
     Joining_Date = db.Column(db.String(300))
     End_of_Contract = db.Column(db.String(300))
     Firstname =db.Column(db.String(300))
@@ -86,7 +91,7 @@ class Employee_Data(db.Model):
     Supervisor=db.Column(db.String(300))
     Department=db.Column(db.String(300))
     def __init__(self,Emp_ID,Tin_Number,Nssf_Number,Designation,Employee_Status,Joining_Date,End_of_Contract,Firstname,
-                 Lastname,DOB,Marital_Status,Gender,Nationality,Current_Address,Mobile,
+                 Lastname,DOB,Marital_Status,Residence_type,Gender,Nationality,Current_Address,Mobile,
                  Home_Phone,Email,Account_Name,Account_Number,Bank_Name,Bank_Branch,Attendance_Status,
                  Level_of_Education,Institution,Cv,Gross_Pay,Next_of_Kin,Supervisor,Department):
         self.Emp_ID=Emp_ID
@@ -94,6 +99,7 @@ class Employee_Data(db.Model):
         self.Nssf_Number=Nssf_Number
         self.Designation=Designation
         self.Employee_Status=Employee_Status
+        self.Residence_type=Residence_type
         self.Joining_Date=Joining_Date
         self.End_of_Contract=End_of_Contract
         self.Firstname=Firstname
@@ -120,7 +126,6 @@ class Employee_Data(db.Model):
         self.Department=Department
 db.create_all()
 db.session.commit()
-
 #creating a db to the database
 DATABASE  = 'Database.db'
 
@@ -131,7 +136,80 @@ def getConnection():
         con = g._database = sqlite3.connect(DATABASE)
     return con
 
+def add_data(emp_id,name,gross_pay,residence):
+    #a list for adding data into the finance module
+    detail=[]
+    db = getConnection()
+    c = db.cursor()
+    detail.append(emp_id)
+    detail.append(name)
+    detail.append(float(gross_pay))
+    #calculate NSSf contribution
+    #5% calculation
+    employee_contrnssf=0.05*float(gross_pay)
+    detail.append(float(employee_contrnssf))
+    #employer NSSf contribution
+    employeer_contrnssf=0.1*float(gross_pay)
+    detail.append(float(employeer_contrnssf))
+    nssf_contribution = employee_contrnssf+employeer_contrnssf
+    detail.append(nssf_contribution)
 
+    #calculate payee
+        
+    if residence=='Resident':
+        #Paye for residents
+        if float(gross_pay)<235000:
+            paye=0
+                    
+        elif float(gross_pay) in range(235000,335000):
+            paye=0.1*float(gross_pay)
+                    
+        elif float(gross_pay) in range(335000,410000):
+            paye=10000 + 0.2*float(gross_pay)
+                    
+        elif float(gross_pay)>410000:
+            paye=25000+0.3*float(gross_pay)
+                    
+        elif float(gross_pay)>10000000:
+            paye=25000+0.3*float(gross_pay)+0.1*float(gross_pay)
+                    
+        else:
+            print("Enter valid money for the employeee")
+
+    elif residence== 'Non-Resident':
+        #paye for non residents
+        if float(gross_pay)<335000:
+            paye=0.1*float(gross_pay)
+                    
+        elif float(gross_pay) in range(335000,410000):
+            paye=33500 + 0.2*float(gross_pay)
+                    
+        elif float(gross_pay)>410000:
+            paye=48500+0.3*float(gross_pay)
+                    
+        elif float(gross_pay)>10000000:
+            paye=48500+0.3*float(gross_pay)+0.1*float(gross_pay)
+                    
+        else:
+            print("Enter valid money for the employeee")
+
+
+    else:
+        print("warning this field is required !!!")
+    detail.append(paye)
+    tt_deductions=paye+nssf_contribution
+    detail.append(tt_deductions)
+    Net_salary=float(gross_pay)-tt_deductions
+    detail.append(Net_salary)
+            
+    arr=[str(i) for i in detail]
+    detail_data = tuple(arr)
+    c.execute('''Insert INTO Finances(Emp_ID,Employee_Name,Gross_pay,employee_contrb,employer_contrb,nssf_contrib,Paye,Total_Dect,Net_pay) VALUES {table_value}'''.format(table_value=detail_data))
+            
+    db.commit()
+    db.close()
+    
+    
 @app.route("/Profile", methods=["GET", "POST"])
 def Profile():
     if request.method=='POST':
@@ -220,8 +298,20 @@ def department():
     db.commit()
     db.close()
     return render_template('department.html',rows=rows)
-@app.route('/Employee',methods=['POST','GET'])
+@app.route('/Employee')
 def Employee():
+    #connecting and selecting departments
+    db=getConnection()
+    c=db.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS Finances(Emp_ID VARCHAR(15),Employee_Name VARCHAR(100),Gross_pay VARCHAR(100),employee_contrb VARCHAR(100),employer_contrb VARCHAR(100),nssf_contrib VARCHAR(50),Paye VARCHAR(100),Total_Dect VARCHAR(100),Net_pay VARCHAR(100))''')
+    query = c.execute('SELECT * FROM  Departments')
+    rows = query.fetchall()
+    db.commit()
+    db.close()
+    return render_template('employe_maintence.html',rows=rows)
+@app.route('/add_employee',methods=['POST','GET'])
+def add_employee():
+    
     # file = Data.query.filter_by(id=1).first()
     # img = base64.b64encode(file.image).decode('ascii')
     if request.method == 'POST':
@@ -230,10 +320,12 @@ def Employee():
         nssf_num=request.form['nssf_num']
         designation=request.form['designation']
         status=request.form['status']
+        residence=request.form['residence_nature']
         join_date=request.form['join_date']
         end_date=request.form['end_date']
         first_name=request.form['first_name']
         last_name=request.form['last_name']
+        name=first_name+" "+last_name
         date_of_birth=request.form['date_of_birth']
         marital_status=request.form['marital_status']
         gender=request.form['gender']
@@ -252,18 +344,26 @@ def Employee():
         cv=request.files['cv']
         file=cv.read()
         gross_pay=request.form['gross_pay']
+        
         next_of_kin=request.form['next_of_kin']
         supervisor=request.form['supervisor']
         department=request.form['department']
         try:
-            new_file = Employee_Data(Emp_ID=emp_id,Tin_Number=tin_num,Nssf_Number=nssf_num,Designation=designation,Employee_Status=status,Joining_Date=join_date,
+            new_file = Employee_Data(Emp_ID=emp_id,Tin_Number=tin_num,Nssf_Number=nssf_num,Designation=designation,Employee_Status=status,Residence_type=residence,Joining_Date=join_date,
                                      End_of_Contract=end_date,Firstname=first_name,Lastname=last_name,DOB=date_of_birth,Marital_Status=marital_status,Gender=gender,
                                      Nationality=nationality,Current_Address=current_address,Mobile=mobile,Home_Phone=phone,Email=email,Account_Name=account_name,Account_Number=account_number,
                                      Bank_Name=bank_name,Bank_Branch=bank_branch,Attendance_Status=sts,Level_of_Education=level,Institution=institution,
                                      Cv=file,Gross_Pay=gross_pay,Next_of_Kin=next_of_kin,Supervisor=supervisor,Department=department)
             db.session.add(new_file)
+            add_data(emp_id,name,gross_pay,residence)
             db.session.commit()
-            return redirect(url_for('Employee'))
+            
+            # #adding data to the finance module
+            # db=getConnection()
+            # c=db.cursor()
+
+            
+            return redirect(url_for('Employee_list'))
         except Exception as e:
             raise e
     return render_template('employe_maintence.html')
@@ -465,99 +565,13 @@ def salary():
     # file = Data.query.filter_by(id=1).first()
     # img = base64.b64encode(file.image).decode('ascii')
     try:
-        emp_rows=Employee_Data.query.all()
         query = c.execute('SELECT * FROM Finances')
         sql_rows = query.fetchall()
     except Exception as e:
-        c = db.cursor()
-        c.execute('''CREATE TABLE  Finances(Employee_Name VARCHAR(100),Residence_type VARCHAR(50),Employee_type VARCHAR(100),Gross_pay VARCHAR(100),Nssf_contrb VARCHAR(100),Paye VARCHAR(100),Total_Dect VARCHAR(100),Net_pay VARCHAR(100))''')
-        db.commit()
-        return redirect(url_for('salary'))
-    db.close()
-    return render_template('salary.html',data1=sql_rows,emp_rows=emp_rows)
-@app.route('/add_detail',methods=['POST','GET'])
-def add_detail():
-    detail=[]
-    if request.method == 'POST':
-        Employee_name=request.form['name']
-        detail.append(Employee_name)
-        residence_type=request.form['residence_nature']
-        detail.append(residence_type)
-        employee_type=request.form['emp_type']
-        detail.append(employee_type)
-        
-        basic_salary=request.form['bsalary']
-        detail.append(float(basic_salary))
-        #calculate NSSf contribution
-        #5% calculation
-        employee_contrnssf=0.05*float(basic_salary)
-        #employer NSSf contribution
-        employeer_contrnssf=0.1*float(basic_salary)
-        nssf_contribution = employee_contrnssf+employeer_contrnssf
-        detail.append(nssf_contribution)
+        raise e
+    
+    return render_template('salary.html',data1=sql_rows)
 
-        #calculate payee
-       
-        if residence_type=='Resident':
-             #Paye for residents
-            if float(basic_salary)<235000:
-                paye=0
-                
-            elif float(basic_salary) in range(235000,335000):
-                paye=0.1*float(basic_salary)
-                
-            elif float(basic_salary) in range(335000,410000):
-                paye=10000 + 0.2*float(basic_salary)
-                
-            elif float(basic_salary)>410000:
-                paye=25000+0.3*float(basic_salary)
-                
-            elif float(basic_salary)>10000000:
-                paye=25000+0.3*float(basic_salary)+0.1*float(basic_salary)
-                
-            else:
-                print("Enter valid money for the employeee")
-
-        elif residence_type == 'Non-Resident':
-            #paye for non residents
-            if float(basic_salary)<335000:
-                paye=0.1*float(basic_salary)
-                
-            elif float(basic_salary) in range(335000,410000):
-                paye=33500 + 0.2*float(basic_salary)
-                
-            elif float(basic_salary)>410000:
-                paye=48500+0.3*float(basic_salary)
-                
-            elif float(basic_salary)>10000000:
-                paye=48500+0.3*float(basic_salary)+0.1*float(basic_salary)
-                
-            else:
-                print("Enter valid money for the employeee")
-
-
-        else:
-            print("warning this field is required !!!")
-        detail.append(paye)
-        tt_deductions=paye+nssf_contribution
-        detail.append(tt_deductions)
-        Net_salary=float(basic_salary)-tt_deductions
-        detail.append(Net_salary)
-        
-        arr=[str(i) for i in detail]
-        detail_data = tuple(arr)
-  
-        db = getConnection()
-        c = db.cursor()
-        try:
-            c.execute('''CREATE TABLE IF NOT EXISTS Finances(Employee_Name VARCHAR(100),Residence_type VARCHAR(50),Employee_type VARCHAR(100),Gross_pay VARCHAR(100),Nssf_contrb VARCHAR(100),Paye VARCHAR(100),Total_Dect VARCHAR(100),Net_pay VARCHAR(100))''')
-            c.execute('''Insert INTO Finances(Employee_Name,Residence_type,Employee_type,Gross_pay,Nssf_contrb,Paye,Total_Dect,Net_pay) VALUES {table_value}'''.format(table_value=detail_data))
-            db.commit()
-            db.close()
-            return  redirect(url_for('salary'))
-        except Exception as e:
-            raise e   
-    return render_template('salary.html')
 ##employee salaries
 @app.route('/Salaries')
 def Salaries():
@@ -574,7 +588,7 @@ def Salaries():
         c.execute(
             '''CREATE TABLE IF NOT EXISTS Allowances(Emp_Name VARCHAR(100),Allowance_type VARCHAR(100),Issue_Date DATE,Amount VARCHAR(100))''')
         c.execute(
-            '''CREATE TABLE IF NOT EXISTS Payment(Emp_Name VARCHAR(100),Salary VARCHAR(15),Paid_month VARCHAR(15),pYear VARCHAR(10),Issue_Date DATE)''')
+            '''CREATE TABLE IF NOT EXISTS Payment(Emp_ID VARCHAR(100),Salary VARCHAR(15),Paid_month VARCHAR(15),pYear VARCHAR(10),Issue_Date DATE)''')
         return redirect(url_for('Salaries'))
     # file = Data.query.filter_by(id=1).first()
     # img = base64.b64encode(file.image).decode('ascii')
@@ -598,17 +612,19 @@ def gen_slip():
         db = getConnection()
         c = db.cursor()
         new_data=request.form['myFile']
+        emdata = c.execute('''SELECT * FROM employee__data WHERE Emp_ID=('{nd}')'''.format(nd=new_data))
+        rdata =  emdata.fetchall()
         crows=Data.query.all()
         for i in crows:
             cname = i.company_name
             caddress=i.address
-        gallowances = c.execute('''SELECT * FROM Allowances WHERE Emp_Name=('{nd}')'''.format(nd=new_data))
+        gallowances = c.execute('''SELECT * FROM Allowances WHERE Emp_ID=('{nd}')'''.format(nd=new_data))
         rallowances =  gallowances.fetchall()
-        gpayment = c.execute('''SELECT * FROM Payment WHERE Emp_Name=('{name}')'''.format(name=new_data))
+        gpayment = c.execute('''SELECT * FROM Payment WHERE Emp_ID=('{name}')'''.format(name=new_data))
         rpay_list = gpayment.fetchall()
-        gf = c.execute('''SELECT * FROM Finances WHERE Employee_Name=('{name}')'''.format(name=new_data))
+        gf = c.execute('''SELECT * FROM Finances WHERE Emp_ID=('{name}')'''.format(name=new_data))
         rf_list = gf.fetchall()
-
+        
         pdf = FPDF(format='letter')
         pdf.add_page()
         page_width = pdf.w - 2 * pdf.l_margin
@@ -621,9 +637,9 @@ def gen_slip():
         pdf.ln()
         pdf.multi_cell(200, 5, 'Monthly Payslip')
         pdf.ln()
-        pdf.multi_cell(0, 5, ('Employee Name: %s' % rpay_list[0][0]))
+        pdf.multi_cell(0, 5, ('Employee Name: %s' % rf_list[0][1]))
         pdf.ln()
-        pdf.multi_cell(0, 5, ('Designation: %s' % rf_list[0][1]))
+        pdf.multi_cell(0, 5, ('Designation: %s' % rdata[0][4]))
         pdf.ln()
         pdf.multi_cell(0, 5, ('Designation: %s' % rpay_list[0][4]))
         pdf.ln()
@@ -653,9 +669,9 @@ def gen_slip():
            pdf.cell(col_width, th, "Net Pay", border=1)
            pdf.cell(col_width, th, drow[7], border=1)
 
-        pdf.output("home.pdf")
+        # pdf.output("home.pdf")
 
-    return send_file('home.pdf',as_attachment=True)
+    return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf', headers={'Content-Disposition':'attachment;filename=pay_slip.pdf'})
 @app.route('/allowances')
 def allowances():
     db = getConnection()
@@ -674,7 +690,7 @@ def allowances():
     except Exception as e:
         c = db.cursor()
         #creat allowances table is not existing
-        c.execute('''CREATE TABLE IF NOT EXISTS Allowances(Emp_Name VARCHAR(100),Allowance_type VARCHAR(100),Issue_Date DATE,Amount VARCHAR(100))''')
+        c.execute('''CREATE TABLE IF NOT EXISTS Allowances(Emp_ID VARCHAR(100),Allowance_type VARCHAR(100),Issue_Date DATE,Amount VARCHAR(100))''')
         #create employee table is not exist
         #create allowance type  table is not exist
         c.execute('''CREATE TABLE IF NOT EXISTS Allowance_types(Allowance_id VARCHAR(100),Allowance_type VARCHAR(100),Creation_Date DATE)''')
@@ -721,7 +737,7 @@ def issue_allowance():
         db = getConnection()
         c = db.cursor()
         try:
-            c.execute('''INSERT INTO Allowances(Emp_Name,Allowance_type,Issue_Date,Amount)  VALUES {table_values}'''.format(table_values=allowance_data))
+            c.execute('''INSERT INTO Allowances(Emp_ID,Allowance_type,Issue_Date,Amount)  VALUES {table_values}'''.format(table_values=allowance_data))
             db.commit()
             db.close()
             return redirect(url_for('allowances'))
@@ -746,7 +762,7 @@ def deductions():
     except Exception as e:
         c = db.cursor()
         #creat allowances table is not existing
-        c.execute('''CREATE TABLE IF NOT EXISTS Deduction(Emp_Name VARCHAR(100),deduction_type VARCHAR(100),Issue_Date DATE,Amount VARCHAR(100))''')
+        c.execute('''CREATE TABLE IF NOT EXISTS Deduction(Emp_id VARCHAR(15),deduction_type VARCHAR(100),Issue_Date DATE,Amount VARCHAR(100))''')
         #create employee table is not exist
         #create allowance type  table is not exist
         c.execute('''CREATE TABLE IF NOT EXISTS Deduction_types(Dect_id VARCHAR(100),Deduction_type VARCHAR(100),Description VARCHAR(100),Creation_Date DATE)''')
@@ -797,7 +813,7 @@ def compute_deduction():
         db = getConnection()
         c = db.cursor()
         try:
-            c.execute('''INSERT INTO Deduction(Emp_Name,deduction_type,Issue_Date,Amount)  VALUES {table_values}'''.format(table_values=edd_data))
+            c.execute('''INSERT INTO Deduction(Emp_id,deduction_type,Issue_Date,Amount)  VALUES {table_values}'''.format(table_values=edd_data))
             db.commit()
             return redirect(url_for('deductions'))
         except Exception as e:
@@ -822,17 +838,19 @@ def nssf_sub():
             nssf_number=i.nssf_number
         ford=c.execute("""SELECT  employee__data.Emp_ID,
         employee__data.Emp_ID,employee__data.Nssf_Number,
-        Finances.Residence_type,employee__data.Firstname,
-        Finances.Gross_pay,Finances.Nssf_contrb,Finances.Paye,
-        Finances.Total_Dect,employee__data.Mobile FROM Payment JOIN Finances ON(Payment.Emp_Name=Finances.Employee_Name) JOIN employee__data ON(Payment.Emp_Name= employee__data.Firstname) WHERE Payment.Paid_month=('{nmonth}') AND  Payment.pYear=('{yr}')"""
+        employee__data.Residence_type,Finances.Employee_Name,
+        Finances.Gross_pay,Finances.employee_contrb,Finances.employer_contrb,
+        Finances.nssf_contrib,employee__data.Mobile FROM Payment JOIN Finances ON(Payment.Emp_ID=Finances.Emp_ID) JOIN employee__data ON(Payment.Emp_ID= employee__data.Emp_ID) WHERE Payment.Paid_month=('{nmonth}') AND  Payment.pYear=('{yr}')"""
                        .format(nmonth=submonth,yr=syear))
         drows = ford.fetchall()
         print(drows)
         #sum
-        tsum=c.execute("select SUM(Finances.Total_Dect)from Payment JOIN Finances ON(Payment.Emp_Name=Finances.Employee_Name) JOIN employee__data ON(Payment.Emp_Name= employee__data.Firstname) WHERE Payment.Paid_month=('{nmonth}')".format(nmonth=submonth))
+        tsum=c.execute("select SUM(Finances.Total_Dect)from Payment JOIN Finances ON(Payment.Emp_ID=Finances.Emp_ID) JOIN employee__data ON(Payment.Emp_ID= employee__data.Emp_ID) WHERE Payment.Paid_month=('{nmonth}')".format(nmonth=submonth))
         tsumval = tsum.fetchall()
-
-        workbook = xlsxwriter.Workbook('nssf.xlsx')
+        
+        output=BytesIO()
+        
+        workbook = xlsxwriter.Workbook(output)
        #writing excel headers
         worksheet = workbook.add_worksheet()
         cell_format = workbook.add_format()
@@ -905,9 +923,13 @@ def nssf_sub():
             for j, value in enumerate(row):
                 worksheet.write(i+12, j, row[j])
         workbook.close() 
+        #go back to the beginning of the stream
+        output.seek(0)
+        
   
     
-    return redirect(url_for('nssf'))
+    # return redirect(url_for('nssf'))
+    return send_file(output, attachment_filename="nssf.xlsx", as_attachment=True)
 
 @app.route('/pay')
 def pay():
@@ -926,7 +948,7 @@ def pay():
         
     except Exception as e:
         c = db.cursor()
-        c.execute('''CREATE TABLE IF NOT EXISTS Payment(Emp_Name VARCHAR(100),Salary VARCHAR(15),Paid_month VARCHAR(15),pYear VARCHAR(10),Issue_Date DATE)''')
+        c.execute('''CREATE TABLE IF NOT EXISTS Payment(Emp_ID VARCHAR(100),Salary VARCHAR(15),Paid_month VARCHAR(15),pYear VARCHAR(10),Issue_Date DATE)''')
         db.commit()
         return redirect(url_for('pay'))
         
@@ -952,9 +974,7 @@ def add_tpaylist():
         arr3=[str(i) for i in list_data]
         main_add = tuple(arr3)
         try:
-            c.execute('''CREATE TABLE IF NOT EXISTS Payment(Emp_Name VARCHAR(100),Salary VARCHAR(15),Paid_month VARCHAR(15),pYear VARCHAR(10),Issue_Date DATE)''')
-           
-            c.execute('''INSERT INTO Payment(Emp_Name,Salary,Paid_month,pYear,Issue_Date)  VALUES {table_value}'''.format(table_value=main_add))
+            c.execute('''INSERT INTO Payment(Emp_ID,Salary,Paid_month,pYear,Issue_Date)  VALUES {table_value}'''.format(table_value=main_add))
             db.commit()
             db.close()
             return redirect(url_for('pay'))
@@ -1037,6 +1057,11 @@ if __name__ == "__main__":
 
 #    app.run( )
 
+<<<<<<< HEAD
    app.run(debug=True)
    # app.run( )
+=======
+#    app.run(debug=True)
+   app.run( )
+>>>>>>> 5663d544939dadbb8acf02105ba6ca9f17e555f4
 
