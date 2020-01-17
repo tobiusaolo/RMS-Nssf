@@ -132,6 +132,15 @@ def getConnection():
         con = g._database = sqlite3.connect(DATABASE)
     return con
 
+def image():
+    try:
+        file = Data.query.filter_by(id=1).first()
+        imgs = base64.b64encode(file.image).decode('ascii')
+    except:
+        imgs = "User"
+    return imgs
+imgs=image()
+
 def add_data(emp_id,name,gross_pay,residence):
     #a list for adding data into the finance module
     detail=[]
@@ -145,6 +154,8 @@ def add_data(emp_id,name,gross_pay,residence):
     employee_contrnssf=0.05*float(gross_pay)
     detail.append(float(employee_contrnssf))
     #employer NSSf contribution
+#    app.run( )
+
     employeer_contrnssf=0.1*float(gross_pay)
     detail.append(float(employeer_contrnssf))
     nssf_contribution = employee_contrnssf+employeer_contrnssf
@@ -229,14 +240,10 @@ def Profile():
             raise e
     return render_template('index.html')
 
+
 @app.route('/',methods=['POST','GET'])
 def index():
-    try:
-        file = Data.query.filter_by(id=1).first()
-        img = base64.b64encode(file.image).decode('ascii')
-    except:
-        img="User"
-    return render_template('index.html',img=img)
+    return render_template('index.html',img=imgs)
 
 ##Edit company profile
 @app.route('/Edit_Profile',methods=['POST','GET'])
@@ -248,12 +255,7 @@ def Edit_Profile():
     address=data.address
     email=data.email
     tel=data.telephone
-    try:
-        file = Data.query.filter_by(id=1).first()
-        img = base64.b64encode(file.image).decode('ascii')
-    except:
-        img = "User"
-    return  render_template('edit.html',cname=cname,tin=tin,nssf=nssf,address=address,email=email,tel=tel,img=img)
+    return  render_template('edit.html',cname=cname,tin=tin,nssf=nssf,address=address,email=email,tel=tel,img=imgs)
 @app.route('/Update_Profile',methods=['POST','GET'])
 def Update_Profile():
     if request.method=='POST':
@@ -285,6 +287,7 @@ def Update_Profile():
 def department():
     # file = Data.query.filter_by(id=1).first()
     # img = base64.b64encode(file.image).decode('ascii')
+    image()
     db = getConnection()
     c = db.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS Departments(Department VARCHAR(100) UNIQUE)''')
@@ -293,7 +296,7 @@ def department():
     rows = query.fetchall()
     db.commit()
     db.close()
-    return render_template('department.html',rows=rows)
+    return render_template('department.html',rows=rows,img=imgs)
 @app.route('/Employee')
 def Employee():
     #connecting and selecting departments
@@ -304,7 +307,7 @@ def Employee():
     rows = query.fetchall()
     db.commit()
     db.close()
-    return render_template('employe_maintence.html',rows=rows)
+    return render_template('employe_maintence.html',rows=rows,img=imgs)
 @app.route('/add_employee',methods=['POST','GET'])
 def add_employee():
     
@@ -362,14 +365,12 @@ def add_employee():
             return redirect(url_for('Employee_list'))
         except Exception as e:
             raise e
-    return render_template('employe_maintence.html')
+    return render_template('employe_maintence.html',img=imgs)
 ####leave and attendance
 @app.route('/Leave')
 def Leave():
     users = Employee_Data.query.all()
-    # file = Data.query.filter_by(id=1).first()
-    # img = base64.b64encode(file.image).decode('ascii')
-    return render_template('leave.html',sql_rows=users)
+    return render_template('leave.html',sql_rows=users,img=imgs)
 ###Public holidays
 @app.route('/Holidays',methods=['POST','GET'])
 def Holidays():
@@ -390,7 +391,7 @@ def Holidays():
             return  redirect(url_for('Leave'))
         except Exception as e:
             raise e
-    return render_template('leave.html')
+    return render_template('leave.html',img=imgs)
 ###sick leave
 @app.route('/Sick_Leave',methods=['POST','GET'])
 def Sick_Leave():
@@ -409,7 +410,7 @@ def Sick_Leave():
             return  redirect(url_for('Leave'))
         except Exception as e:
             raise e
-    return render_template('leave.html')
+    return render_template('leave.html',img=imgs)
 ###Asign a vacation
 @app.route('/Vacation',methods=['POST','GET'])
 def Vacation():
@@ -428,7 +429,7 @@ def Vacation():
             return  redirect(url_for('Leave'))
         except Exception as e:
             raise e
-    return render_template('leave.html')
+    return render_template('leave.html',img=imgs)
 ###set working days
 @app.route('/working_days',methods=['POST','GET'])
 def working_days():
@@ -444,7 +445,7 @@ def working_days():
             db.close()
         except Exception as e:
             raise e
-    return  render_template('working_days.html')
+    return  render_template('working_days.html',img=imgs)
 ##employee list
 @app.route('/Employee_list',methods=['POST','GET'])
 def Employee_list():
@@ -455,7 +456,7 @@ def Employee_list():
     # for i, x in zip(sql_row,rows):
     #     data = i + x
     #     df.append(data)
-    return render_template('employee_list.html',users=users)
+    return render_template('employee_list.html',users=users,img=imgs)
 ##activate status
 @app.route('/activate',methods=['POST','GET'])
 def activate():
@@ -487,8 +488,6 @@ def Fire_Employee():
 ##department list
 @app.route('/Department_list',methods=['POST','GET'])
 def Department_list():
-    file = Data.query.filter_by(id=1).first()
-    img = base64.b64encode(file.image).decode('ascii')
     error = None
     if request.method=='POST':
         departments=request.form['departments']
@@ -508,7 +507,7 @@ def Department_list():
             return redirect(url_for('department'))
         except Exception as e:
                 raise e
-    return render_template('department.html')
+    return render_template('department.html',img=imgs)
 
 ###Delete department
 @app.route('/Delete_Department',methods=['POST','GET'])
@@ -531,7 +530,7 @@ def Attendance():
     users = Employee_Data.query.all()
     # file = Data.query.filter_by(id=1).first()
     # img = base64.b64encode(file.image).decode('ascii')
-    return render_template('attendance.html',rows=users)
+    return render_template('attendance.html',rows=users,img=imgs)
 ###take attendance
 @app.route('/Take_Attendance',methods=['POST','GET'])
 def Take_Attendance():
@@ -566,7 +565,7 @@ def salary():
     except Exception as e:
         raise e
     
-    return render_template('salary.html',data1=sql_rows)
+    return render_template('salary.html',data1=sql_rows,img=imgs)
 
 ##employee salaries
 @app.route('/Salaries')
@@ -588,7 +587,7 @@ def Salaries():
         return redirect(url_for('Salaries'))
     # file = Data.query.filter_by(id=1).first()
     # img = base64.b64encode(file.image).decode('ascii')
-    return render_template('Salaries.html',rallowances=rallowances,rpay_list=rpay_list)
+    return render_template('Salaries.html',rallowances=rallowances,rpay_list=rpay_list,img=imgs)
 
 # ##user settings
 # @app.route('/update_settings')
@@ -692,7 +691,7 @@ def allowances():
         c.execute('''CREATE TABLE IF NOT EXISTS Allowance_types(Allowance_id VARCHAR(100),Allowance_type VARCHAR(100),Creation_Date DATE)''')
         db.commit()
         return redirect(url_for('allowances'))
-    return render_template('allowances.html',data1=allowance_rows,arows=arows,serows=serows)
+    return render_template('allowances.html',data1=allowance_rows,arows=arows,serows=serows,img=imgs)
 @app.route('/add_allowance',methods=('POST','GET'))
 def add_allowance():
     dallowance=[]
@@ -740,7 +739,7 @@ def issue_allowance():
         except Exception as e:
             raise e
 
-    return render_template('allowances.html')
+    return render_template('allowances.html',img=imgs)
 
 @app.route('/deductions')
 def deductions():
@@ -767,7 +766,7 @@ def deductions():
 
 
     db.close()
-    return render_template('deductions.html',adeduction_rows=adeduction_rows,drows=drows,serows=serows)
+    return render_template('deductions.html',adeduction_rows=adeduction_rows,drows=drows,serows=serows,img=imgs)
 @app.route('/add_deduction',methods=['POST','GET'])
 def add_deduction():
     dd=[]
@@ -814,11 +813,11 @@ def compute_deduction():
             return redirect(url_for('deductions'))
         except Exception as e:
             raise e
-    return render_template('deductions.html')
+    return render_template('deductions.html',img=imgs)
 #NSSF submission
 @app.route('/nssf')
 def nssf():
-    return render_template('nssf_subf.html')
+    return render_template('nssf_subf.html',img=imgs)
 @app.route('/nssf_sub',methods=['POST','GET'])
 def nssf_sub():
     if request.method=='POST':
@@ -949,7 +948,7 @@ def pay():
         return redirect(url_for('pay'))
         
     
-    return render_template('pay.html',pay_list=dpay_list,Finance=depart_row)
+    return render_template('pay.html',pay_list=dpay_list,Finance=depart_row,img=imgs)
     
 @app.route('/add_tpaylist',methods=['POST','GET'])
 def add_tpaylist():
@@ -977,7 +976,7 @@ def add_tpaylist():
         except Exception as e:
             raise e
 
-    return render_template('pay.html')
+    return render_template('pay.html',img=imgs)
 
 @app.route('/settings',methods=['POST','GET'])
 def settings():
@@ -998,7 +997,7 @@ def settings():
         db.commit()
         return redirect('settings')
     db.close()
-    return render_template('settings.html',rows=rows,sql_rows=users,depart_row=depart_row)
+    return render_template('settings.html',rows=rows,sql_rows=users,depart_row=depart_row,img=imgs)
 ##Assigning employees roles
 @app.route('/Role',methods=['POST','GET'])
 def Role():
@@ -1017,7 +1016,7 @@ def Role():
             return redirect(url_for('settings'))
         except Exception as e:
             raise e
-    return render_template('settings.html')
+    return render_template('settings.html',img=imgs)
 ##Delete user
 @app.route('/Delete_User',methods=['POST','GET'])
 def Delete_User():
@@ -1048,12 +1047,9 @@ def Change_Password():
             return redirect(url_for('settings'))
         except Exception as e:
             raise e
-    return render_template('settings.html')
+    return render_template('settings.html',img=imgs)
 if __name__ == "__main__":
-
+   app.run(debug=True)
 #    app.run( )
-
-#    app.run(debug=True)
-   app.run( )
 
 
