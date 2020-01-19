@@ -608,6 +608,8 @@ def gen_slip():
         db = getConnection()
         c = db.cursor()
         new_data=request.form['myFile']
+        other=c.execute('''SELECT * FROM Deduction WHERE Emp_ID=('{nd}')'''.format(nd=new_data))
+        rother =  other.fetchall()
         emdata = c.execute('''SELECT * FROM employee__data WHERE Emp_ID=('{nd}')'''.format(nd=new_data))
         rdata =  emdata.fetchall()
         crows=Data.query.all()
@@ -620,18 +622,26 @@ def gen_slip():
         rpay_list = gpayment.fetchall()
         gf = c.execute('''SELECT * FROM Finances WHERE Emp_ID=('{name}')'''.format(name=new_data))
         rf_list = gf.fetchall()
-        
+         #total deductions 
+        dsum=c.execute('''SELECT SUM(Amount) FROM Deduction WHERE Emp_id=('{name}')'''.format(name=new_data))
+        drow = dsum.fetchall()
+        valuer=float(drow[0][0])
+        # total payment
+        netcal=c.execute('''SELECT Net_pay FROM Finances WHERE Emp_ID=('{name}')'''.format(name=new_data))
+        nets=netcal.fetchall()
+        # comp = nets - drow[0][0]
+        netpay=float(nets[0][0])-valuer
+
         pdf = FPDF(format='letter')
         pdf.add_page()
-        page_width = pdf.w - 2 * pdf.l_margin
-        col_width = page_width/4
-        th =12
+        col_width =100
+        th =10
         pdf.set_font("Arial", size=12)
-        pdf.multi_cell(200, 5,cname)
+        pdf.multi_cell(200, 5,cname,align="C")
         pdf.ln()
-        pdf.multi_cell(200, 5,caddress)
+        pdf.multi_cell(200, 5,caddress,align="C")
         pdf.ln()
-        pdf.multi_cell(200, 5, 'Monthly Payslip')
+        pdf.multi_cell(200, 5, 'Monthly Payslip',align="C")
         pdf.ln()
         pdf.multi_cell(0, 5, ('Employee Name: %s' % rf_list[0][1]))
         pdf.ln()
@@ -639,7 +649,7 @@ def gen_slip():
         pdf.ln()
         pdf.multi_cell(0, 5, ('Designation: %s' % rpay_list[0][4]))
         pdf.ln()
-        pdf.multi_cell(200, 5, 'Allowances')
+        pdf.multi_cell(200, 5, 'Allowances',align="C")
         pdf.ln()
         for row in rallowances:
             pdf.cell(col_width, th, str(row[1]), border=1)
@@ -647,8 +657,10 @@ def gen_slip():
             pdf.cell(col_width, th, row[3], border=1)
             pdf.ln(10)
         pdf.ln(5)
-        pdf.multi_cell(200, 5, 'Deductions And Net Pay')
+        pdf.multi_cell(200, 5, 'Deductions And Net Pay',align="C")
         pdf.ln(5)
+        pdf.multi_cell(0, 5, ('Other deduction: %s' % valuer ),align="C")
+        pdf.ln()
         for drow in rf_list :
            pdf.cell(col_width, th, "Nssf Contribution", border=1)
            pdf.cell(col_width, th, drow[4], border=1)
@@ -656,17 +668,22 @@ def gen_slip():
            pdf.cell(col_width, th, "PAYE", border=1)
            pdf.cell(col_width, th, drow[5], border=1)
            pdf.ln(10)
-           pdf.cell(col_width, th, "Total Deduction", border=1)
-           pdf.cell(col_width, th, drow[6], border=1)
-           pdf.ln(10)
            pdf.cell(col_width, th, "Gross Pay", border=1)
            pdf.cell(col_width, th, drow[2], border=1)
+           pdf.ln(10)gi
            pdf.ln(10)
-           pdf.cell(col_width, th, "Net Pay", border=1)
-           pdf.cell(col_width, th, drow[7], border=1)
+           pdf.cell(col_width, th, "Net pay", border=1)
+           pdf.cell(col_width, th, drow[8], border=1)
+           pdf.ln(10)
+           
+        pdf.ln(5)
+        pdf.multi_cell(0, 5, ('Salary: %s' % netpay ))
+        pdf.ln()
+        
+
 
         # pdf.output("home.pdf")
-
+    # return Response(pdf.output(dest='S'), mimetype='application/pdf', headers={'Content-Disposition':'attachment;filename=pay_slip.pdf'})
     return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf', headers={'Content-Disposition':'attachment;filename=pay_slip.pdf'})
 @app.route('/allowances')
 def allowances():
@@ -755,7 +772,8 @@ def deductions():
         #select allownaces
         query = c.execute('SELECT * FROM  Deduction')
         adeduction_rows = query.fetchall()
-    except Exception as e:
+       
+    except:
         c = db.cursor()
         #creat allowances table is not existing
         c.execute('''CREATE TABLE IF NOT EXISTS Deduction(Emp_id VARCHAR(15),deduction_type VARCHAR(100),Issue_Date DATE,Amount VARCHAR(100))''')
@@ -1051,9 +1069,9 @@ def Change_Password():
     return render_template('settings.html')
 if __name__ == "__main__":
 
-#    app.run( )
+   app.run( )
 
-   app.run(debug=True)
+#    app.run(debug=True)
 #    app.run( )
 
 
