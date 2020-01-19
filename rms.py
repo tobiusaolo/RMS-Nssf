@@ -634,6 +634,8 @@ def gen_slip():
         pdf = FPDF(format='letter')
         pdf.add_page()
         col_width =100
+        col_width2 =80
+        
         th =10
         pdf.set_font("Arial", size=12)
         pdf.multi_cell(200, 5,cname,align="C")
@@ -651,9 +653,9 @@ def gen_slip():
         pdf.multi_cell(200, 5, 'Allowances',align="C")
         pdf.ln()
         for row in rallowances:
-            pdf.cell(col_width, th, str(row[1]), border=1)
-            pdf.cell(col_width, th, row[2], border=1)
-            pdf.cell(col_width, th, row[3], border=1)
+            pdf.cell(col_width2, th, str(row[1]), border=1)
+            pdf.cell(col_width2, th, row[2], border=1)
+            pdf.cell(col_width2, th, row[3], border=1)
             pdf.ln(10)
         pdf.ln(5)
         pdf.multi_cell(200, 5, 'Deductions And Net Pay',align="C")
