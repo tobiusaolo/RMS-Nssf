@@ -669,7 +669,7 @@ def gen_slip():
            pdf.ln(10)
            pdf.cell(col_width, th, "Gross Pay", border=1)
            pdf.cell(col_width, th, drow[2], border=1)
-           pdf.ln(10)gi
+           pdf.ln(10)
            pdf.ln(10)
            pdf.cell(col_width, th, "Net pay", border=1)
            pdf.cell(col_width, th, drow[8], border=1)
