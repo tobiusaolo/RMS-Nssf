@@ -1067,14 +1067,10 @@ def Change_Password():
             raise e
     return render_template('settings.html',img=imgs)
 if __name__ == "__main__":
-<<<<<<< HEAD
 
    app.run( )
 
 #    app.run(debug=True)
-=======
-   app.run(debug=True)
->>>>>>> 908f7f8fdfb0697aec07152daf2cd99397bc5cce
 #    app.run( )
 
 
